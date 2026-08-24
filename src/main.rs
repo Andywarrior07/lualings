@@ -1,5 +1,6 @@
 use clap::Parser;
-use mlua::{Lua, Result as LuaResult};
+use lualings::lua_runner;
+use mlua::Result as LuaResult;
 
 /// Un simple programa de ejemplo
 #[derive(Parser, Debug)]
@@ -13,11 +14,7 @@ struct Args {
 fn main() -> LuaResult<()> {
     // Parseo de argumentos con Clap
     let args = Args::parse();
-    
-    // Prueba de mlua (Lua 5.4)
-    let lua = Lua::new();
-    let greet = format!("print('Hola, {} desde Lua!')", args.name);
-    lua.load(&greet).exec()?;
 
-    Ok(())
+    let greet = format!("print('Hola, {} desde Lua!')", args.name);
+    lua_runner::run_source(&greet)
 }
