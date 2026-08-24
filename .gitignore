@@ -13,3 +13,8 @@ devenv.local.yaml
 # Added by cargo
 
 /target
+
+.lualings-cache/*
+
+# Ignore file for editors
+.ignore
