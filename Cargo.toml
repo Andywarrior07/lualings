@@ -2,6 +2,13 @@
 name = "lualings"
 version = "0.1.0"
 edition = "2024"
+authors = ["Andy Guerrero <contacto@andresguerrero.dev>"]
+description = "Learn and practice Lua with interactive exercises, inspired by Rustlings"
+license = "MIT"
+repository = "https://github.com/Andywarrior07/lualings"
+readme = "README.md"
+keywords = ["lua", "learning", "cli", "exercises"]
+categories = ["command-line-utilities", "development-tools"]
 
 [dependencies]
 clap = { version = "4.6.6", features = ["derive"] }
