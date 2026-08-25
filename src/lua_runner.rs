@@ -6,6 +6,17 @@ pub fn run_source(source: &str) -> LuaResult<()> {
     lua.load(source).exec()
 }
 
+pub fn run_test(source: &str) -> bool {
+    let lua = Lua::new();
+    if lua.load(source).exec().is_err() {
+        return false;
+    }
+    matches!(
+        lua.globals().get::<Value>("__lualings_pass"),
+        Ok(Value::Boolean(true))
+    )
+}
+
 pub fn run_compile(source: &str) -> bool {
     run_source(source).is_ok()
 }
@@ -41,12 +52,43 @@ pub fn install_print_capture(lua: &Lua) -> LuaResult<Arc<Mutex<Vec<String>>>> {
 
 #[cfg(test)]
 mod tests {
-    use super::{install_print_capture, run_compile, run_source};
+    use super::{install_print_capture, run_compile, run_source, run_test};
     use mlua::Lua;
     use std::sync::{Arc, Mutex};
 
     fn snapshot(buffer: &Arc<Mutex<Vec<String>>>) -> Vec<String> {
         buffer.lock().unwrap().clone()
+    }
+
+    #[test]
+    fn run_test_passes_when_flag_set_to_true() {
+        assert!(run_test("_G.__lualings_pass = true"));
+    }
+
+    #[test]
+    fn run_test_fails_when_script_errors_after_setting_flag() {
+        assert!(!run_test("_G.__lualings_pass = true\nerror('boom')"));
+    }
+
+    #[test]
+    fn run_test_fails_when_flag_not_set() {
+        assert!(!run_test("local x = 1"));
+    }
+
+    #[test]
+    fn run_test_fails_when_script_errors_before_setting_flag() {
+        assert!(!run_test("error('boom')"));
+    }
+
+    #[test]
+    fn run_test_fails_when_flag_is_false() {
+        assert!(!run_test("_G.__lualings_pass = false"));
+    }
+
+    #[test]
+    fn run_test_fails_when_flag_is_truthy_non_boolean() {
+        assert!(!run_test("_G.__lualings_pass = 1"));
+        assert!(!run_test("_G.__lualings_pass = 'true'"));
     }
 
     #[test]
