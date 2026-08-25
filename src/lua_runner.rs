@@ -1,4 +1,5 @@
-use mlua::{Lua, Result as LuaResult};
+use mlua::{Lua, Result as LuaResult, Value, Variadic};
+use std::sync::{Arc, Mutex};
 
 pub fn run_source(source: &str) -> LuaResult<()> {
     let lua = Lua::new();
@@ -20,7 +21,7 @@ pub fn install_print_capture(lua: &Lua) -> LuaResult<Arc<Mutex<Vec<String>>>> {
         }
         let line = parts.join("\t");
 
-        buffer_for_clouse
+        buffer_for_closure
             .lock()
             .map_err(|_| {
                 mlua::Error::RuntimeError("print capture buffer mutex was posioned".to_string())
@@ -40,13 +41,13 @@ mod tests {
     use mlua::Lua;
     use std::sync::{Arc, Mutex};
 
-    fn snapshot(Buffer: &Arc<Mutex<Vec<String>>>) -> Vec<String> {
+    fn snapshot(buffer: &Arc<Mutex<Vec<String>>>) -> Vec<String> {
         buffer.lock().unwrap().clone()
     }
 
     #[test]
     fn install_print_capture_starts_with_empty_buffer() {
-        let Lua = Lua::new();
+        let lua = Lua::new();
         let buffer = install_print_capture(&lua).unwrap();
         assert!(snapshot(&buffer).is_empty());
     }
