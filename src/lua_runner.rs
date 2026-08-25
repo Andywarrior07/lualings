@@ -6,6 +6,10 @@ pub fn run_source(source: &str) -> LuaResult<()> {
     lua.load(source).exec()
 }
 
+pub fn run_compile(source: &str) -> bool {
+    run_source(source).is_ok()
+}
+
 // Reemplaza `_G.print` en `lua` para que su salida quede en un buffer
 // en memoria en vez de ir a stdout real, precondición para que un futuro panel
 // TUI (Epic 7) la renderice. Debe llamarse antes de ejecutar cualquier
@@ -37,12 +41,32 @@ pub fn install_print_capture(lua: &Lua) -> LuaResult<Arc<Mutex<Vec<String>>>> {
 
 #[cfg(test)]
 mod tests {
-    use super::{install_print_capture, run_source};
+    use super::{install_print_capture, run_compile, run_source};
     use mlua::Lua;
     use std::sync::{Arc, Mutex};
 
     fn snapshot(buffer: &Arc<Mutex<Vec<String>>>) -> Vec<String> {
         buffer.lock().unwrap().clone()
+    }
+
+    #[test]
+    fn run_compile_valid_script_returns_true() {
+        assert!(run_compile("local x = 1 + 1"));
+    }
+
+    #[test]
+    fn run_compile_syntax_error_returns_false() {
+        assert!(!run_compile("local x = "));
+    }
+
+    #[test]
+    fn run_compile_runtime_error_returns_false() {
+        assert!(!run_compile("error('boom')"));
+    }
+
+    #[test]
+    fn run_compile_global_assignment_passes() {
+        assert!(run_compile("x = 5"));
     }
 
     #[test]
@@ -91,7 +115,7 @@ mod tests {
     fn print_non_string_args_use_lua_tostring_formatting() {
         let lua = Lua::new();
         let buffer = install_print_capture(&lua).unwrap();
-        lua.load("print(1, true, nil,)").exec().unwrap();
+        lua.load("print(1, true, nil)").exec().unwrap();
         assert_eq!(snapshot(&buffer), vec!["1\ttrue\tnil".to_string()]);
     }
 
