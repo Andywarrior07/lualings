@@ -299,4 +299,64 @@ mod tests {
         let message = format!("{err}");
         assert!(message.contains("exercises/01_junior/01_variables/no_exist.lua"));
     }
+
+    #[test]
+    fn parse_exercises_malformed_json_reports_location() {
+        let err = parse_exercises(r#"{ "levels": ["#).unwrap_err();
+        let message = err.to_string();
+        assert!(message.contains("line"));
+        assert!(message.contains("column"));
+    }
+
+    #[test]
+    fn parse_exercises_missing_field_names_it_and_reports_location() {
+        let json = r#"
+        {
+            "levels": [
+                {
+                    "name": "01_junior",
+                    "modules": [
+                        {
+                            "name": "01_variables",
+                            "exercises": [
+                                { "name": "x", "mode": "compile", "hint": "h" }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+        "#;
+        let err = parse_exercises(json).unwrap_err();
+        let message = err.to_string();
+        assert!(message.contains("missing field `path`"));
+        assert!(message.contains("line"));
+        assert!(message.contains("column"));
+    }
+
+    #[test]
+    fn parse_exercises_wrong_type_reports_location() {
+        let json = r#"
+        {
+            "levels": [
+                {
+                    "name": "01_junior",
+                    "modules": [
+                        {
+                            "name": "01_variables",
+                            "exercises": [
+                                { "name": "x", "path": 123, "mode": "compile", "hint": "h" }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+        "#;
+        let err = parse_exercises(json).unwrap_err();
+        let message = err.to_string();
+        assert!(message.contains("invalid type"));
+        assert!(message.contains("line"));
+        assert!(message.contains("column"));
+    }
 }
