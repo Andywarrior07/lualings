@@ -52,9 +52,36 @@ pub fn parse_exercises(json: &str) -> Result<Vec<Exercise>, serde_json::Error> {
     Ok(exercises)
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct MissingPaths(pub Vec<String>);
+
+impl std::fmt::Display for MissingPaths {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "info.json declares paths that do not exist on disk:")?;
+        for path in &self.0 {
+            writeln!(f, " - {path}")?;
+        }
+        Ok(())
+    }
+}
+
+pub fn validate_paths(exercises: &[Exercise]) -> Result<(), MissingPaths> {
+    let missing: Vec<String> = exercises
+        .iter()
+        .filter(|exercise| !std::path::Path::new(&exercise.path).is_file())
+        .map(|exercise| exercise.path.clone())
+        .collect();
+
+    if missing.is_empty() {
+        Ok(())
+    } else {
+        Err(MissingPaths(missing))
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{Mode, parse_exercises};
+    use super::{Exercise, Mode, parse_exercises, validate_paths};
 
     #[test]
     fn parse_exercises_preserves_file_order() {
@@ -226,5 +253,50 @@ mod tests {
         "#;
 
         assert!(parse_exercises(json).is_err());
+    }
+
+    fn exercise_with_path(path: &str) -> Exercise {
+        Exercise {
+            name: "placeholder".to_string(),
+            path: path.to_string(),
+            mode: Mode::Compile,
+            hint: "hint".to_string(),
+            level: "01_junior".to_string(),
+            module: "01_variables".to_string(),
+        }
+    }
+
+    #[test]
+    fn validate_paths_passes_when_all_exist() {
+        let exercises = vec![
+            exercise_with_path("Cargo.toml"),
+            exercise_with_path("src/lib.rs"),
+        ];
+        assert_eq!(validate_paths(&exercises), Ok(()));
+    }
+
+    #[test]
+    fn validate_paths_detects_missing_paths() {
+        let exercises = vec![
+            exercise_with_path("Cargo.toml"),
+            exercise_with_path("exercises/01_junior/01_variables/no_exist.lua"),
+        ];
+
+        let err = validate_paths(&exercises).unwrap_err();
+        assert_eq!(
+            err.0,
+            vec!["exercises/01_junior/01_variables/no_exist.lua".to_string()]
+        )
+    }
+
+    #[test]
+    fn validate_paths_error_message_is_readable() {
+        let exercises = vec![exercise_with_path(
+            "exercises/01_junior/01_variables/no_exist.lua",
+        )];
+
+        let err = validate_paths(&exercises).unwrap_err();
+        let message = format!("{err}");
+        assert!(message.contains("exercises/01_junior/01_variables/no_exist.lua"));
     }
 }
