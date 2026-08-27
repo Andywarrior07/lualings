@@ -83,9 +83,39 @@ pub fn save(path: &std::path::Path, progress: &Progress) -> Result<(), SaveError
     Ok(())
 }
 
+pub struct ProgressStore {
+    path: std::path::PathBuf,
+    progress: Progress,
+}
+
+impl ProgressStore {
+    pub fn load(path: &std::path::Path) -> Result<Self, LoadError> {
+        let progress = load(path)?;
+        Ok(Self {
+            path: path.to_path_buf(),
+            progress,
+        })
+    }
+
+    pub fn mark_done(&mut self, exercise_path: &str) -> Result<(), SaveError> {
+        self.progress
+            .completed
+            .insert(exercise_path.to_string(), true);
+        save(&self.path, &self.progress)
+    }
+
+    pub fn is_done(&self, exercise_path: &str) -> bool {
+        self.progress
+            .completed
+            .get(exercise_path)
+            .copied()
+            .unwrap_or(false)
+    }
+}
+
 #[cfg(test)]
 mod test {
-    use super::{LoadError, Progress, load, save};
+    use super::{LoadError, Progress, ProgressStore, load, save};
     use std::collections::BTreeMap;
 
     #[test]
@@ -226,5 +256,72 @@ mod test {
         save(&path, &Progress::default()).unwrap();
 
         assert!(!dir.path().join("progress.json.tmp").exists());
+    }
+
+    #[test]
+    fn store_load_when_file_missing_returns_empty_progress() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("progress.json");
+        let store = ProgressStore::load(&path).unwrap();
+
+        assert!(!store.is_done("exercises/01_junior/01_variables/a.lua"));
+    }
+
+    #[test]
+    fn store_mark_done_then_is_done_true() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("progress.json");
+        let mut store = ProgressStore::load(&path).unwrap();
+
+        store
+            .mark_done("exercises/01_junior/01_variables/a.lua")
+            .unwrap();
+
+        assert!(store.is_done("exercises/01_junior/01_variables/a.lua"));
+    }
+
+    #[test]
+    fn store_is_done_false_for_unmarked_exercise() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("progress.json");
+        let store = ProgressStore::load(&path).unwrap();
+
+        assert!(!store.is_done("exercises/01_junior/01_variables/nunca_marcado.lua"));
+    }
+
+    #[test]
+    fn store_mark_done_twice_is_idempotent() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("progress.json");
+        let mut store = ProgressStore::load(&path).unwrap();
+
+        store
+            .mark_done("exercises/01_junior/01_variables/a.lua")
+            .unwrap();
+        store
+            .mark_done("exercises/01_junior/01_variables/a.lua")
+            .unwrap();
+
+        assert!(store.is_done("exercises/01_junior/01_variables/a.lua"));
+        assert_eq!(store.progress.completed.len(), 1);
+    }
+
+    #[test]
+    fn store_mark_done_persists_to_disk() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("progress.json");
+        let mut store = ProgressStore::load(&path).unwrap();
+
+        store
+            .mark_done("exercises/01_junior/01_variables/a.lua")
+            .unwrap();
+
+        let reloaded = load(&path).unwrap();
+        assert_eq!(
+            reloaded
+                .completed
+                .get("exercises/01_junior/01_variables/a.lua"),
+            Some(&true)
+        )
     }
 }
