@@ -41,9 +41,51 @@ pub fn load(path: &std::path::Path) -> Result<Progress, LoadError> {
     }
 }
 
+#[derive(Debug)]
+pub enum SaveError {
+    Io(std::io::Error),
+}
+
+impl std::fmt::Display for SaveError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            SaveError::Io(err) => write!(f, "{err}"),
+        }
+    }
+}
+
+impl std::error::Error for SaveError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            SaveError::Io(err) => Some(err),
+        }
+    }
+}
+
+pub fn save(path: &std::path::Path, progress: &Progress) -> Result<(), SaveError> {
+    if let Some(dir) = path.parent()
+        && !dir.as_os_str().is_empty()
+    {
+        std::fs::create_dir_all(dir).map_err(SaveError::Io)?;
+    }
+
+    let json = serde_json::to_string_pretty(progress)
+        .expect("Progress solo contiene String/bool: no puede fallar al serializar");
+    let mut tmp_name = path
+        .file_name()
+        .expect("Path debe tener nombre de archivo")
+        .to_os_string();
+    tmp_name.push(".tmp");
+    let tmp_path = path.with_file_name(tmp_name);
+
+    std::fs::write(&tmp_path, json).map_err(SaveError::Io)?;
+    std::fs::rename(&tmp_path, path).map_err(SaveError::Io)?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod test {
-    use super::{LoadError, Progress, load};
+    use super::{LoadError, Progress, load, save};
     use std::collections::BTreeMap;
 
     #[test]
@@ -125,5 +167,64 @@ mod test {
             Err(LoadError::Io(_)) => {}
             other => panic!("expected LoadError::Io, got {other:?}"),
         }
+    }
+
+    #[test]
+    fn save_creates_missing_directory() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("nested").join("progress.json");
+
+        save(&path, &Progress::default()).unwrap();
+
+        assert!(path.parent().unwrap().is_dir());
+        assert!(path.is_file());
+    }
+
+    #[test]
+    fn save_then_load_roundtrips() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("progress.json");
+        let mut completed = BTreeMap::new();
+        completed.insert("exercises/01_junior/01_variables/a.lua".to_string(), true);
+        completed.insert("exercises/01_junior/01_variables/b.lua".to_string(), false);
+        let progress = Progress { completed };
+        save(&path, &progress).unwrap();
+
+        assert_eq!(load(&path).unwrap(), progress);
+    }
+
+    #[test]
+    fn save_twice_does_not_corrupt() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("progress.json");
+
+        let mut completed_a = BTreeMap::new();
+        completed_a.insert("exercises/01_junior/01_variables/a.lua".to_string(), true);
+        save(
+            &path,
+            &Progress {
+                completed: completed_a,
+            },
+        )
+        .unwrap();
+
+        let mut completed_b = BTreeMap::new();
+        completed_b.insert("exercises/01_junior/02_types/b.lua".to_string(), true);
+        let progress_b = Progress {
+            completed: completed_b,
+        };
+        save(&path, &progress_b).unwrap();
+
+        assert_eq!(load(&path).unwrap(), progress_b);
+    }
+
+    #[test]
+    fn save_does_not_leave_temp_file_behind() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("progress.json");
+
+        save(&path, &Progress::default()).unwrap();
+
+        assert!(!dir.path().join("progress.json.tmp").exists());
     }
 }
