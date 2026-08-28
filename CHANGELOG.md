@@ -13,3 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic `.lua` file change detection via `notify` (`watcher::watch`), filtering to `.lua` files
 and running continuously without needing to be restarted after each event. Debounce and active-exercise
 filtering are separate, not-yet-scheduled tasks.
+- Debounce for `watcher::watch`: raw filesystem events for the same `.lua` path arriving within
+`DEFAULT_DEBOUNCE_WINDOW` (300ms, a conservative starting point subject to adjustment) now collapse
+into a single logical `ChangeEvent`, so editors that emit several raw events per save (e.g. Helix's
+default atomic save) no longer trigger multiple re-evaluations for one save.
