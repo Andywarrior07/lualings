@@ -17,3 +17,7 @@ filtering are separate, not-yet-scheduled tasks.
 `DEFAULT_DEBOUNCE_WINDOW` (300ms, a conservative starting point subject to adjustment) now collapse
 into a single logical `ChangeEvent`, so editors that emit several raw events per save (e.g. Helix's
 default atomic save) no longer trigger multiple re-evaluations for one save.
+- Active-exercise filtering for `watcher::watch` via `WatchHandle::set_active`: once called, the
+watcher emits `ChangeEvent`s only for the currently active exercise's path (canonicalized comparison,
+`Non` safely blocks everything), and the active exercise can be changed at runtime. Callers that
+never call `set_active` keep seeing every `.lua` change, unchanged from before this task.
