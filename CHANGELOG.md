@@ -21,3 +21,7 @@ default atomic save) no longer trigger multiple re-evaluations for one save.
 watcher emits `ChangeEvent`s only for the currently active exercise's path (canonicalized comparison,
 `Non` safely blocks everything), and the active exercise can be changed at runtime. Callers that
 never call `set_active` keep seeing every `.lua` change, unchanged from before this task.
+- CLI subcommand structure (`cli::CLI`/ `cli::Commands`, `clap` derive): `list`, `run <name>`, `watch`,
+`init`, `hint <name>`, `hint --solution <name>` all parse correctly and reject a missing `<name>` with
+a clear error; running with no subcommand shows `--help`. Parsing only - `main.rs` still `todo!()`s
+every subcommand, since implementing their actual behavior is separate, not-yet-scheduled tasks.
