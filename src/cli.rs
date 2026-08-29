@@ -1,4 +1,7 @@
+use crate::exercise::Exercise;
+use crate::progress::ProgressStore;
 use clap::{Parser, Subcommand};
+use std::fmt::Write as _;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None, arg_required_else_help = true)]
@@ -22,10 +25,54 @@ pub enum Commands {
     },
 }
 
+pub fn render_exercise_list(exercises: &[Exercise], progress: &ProgressStore) -> String {
+    let mut out = String::new();
+    let mut current_level: Option<&str> = None;
+    let mut current_module: Option<&str> = None;
+
+    for exercise in exercises {
+        if current_level != Some(exercise.level.as_str()) {
+            let _ = writeln!(out, "{}", exercise.level);
+            current_level = Some(exercise.level.as_str());
+            current_module = None;
+        }
+        if current_module != Some(exercise.module.as_str()) {
+            let _ = writeln!(out, "  {}", exercise.module);
+            current_module = Some(exercise.module.as_str());
+        }
+        let checkbox = if progress.is_done(&exercise.path) {
+            "[x]"
+        } else {
+            "[ ]"
+        };
+        let _ = writeln!(out, "    {checkbox} {}", exercise.name);
+    }
+
+    out
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{Cli, Commands};
+    use super::{Cli, Commands, render_exercise_list};
+    use crate::exercise::{Exercise, Mode};
+    use crate::progress::ProgressStore;
     use clap::Parser;
+
+    fn exercise(level: &str, module: &str, name: &str, path: &str) -> Exercise {
+        Exercise {
+            name: name.to_string(),
+            path: path.to_string(),
+            mode: Mode::Compile,
+            hint: "hint".to_string(),
+            level: level.to_string(),
+            module: module.to_string(),
+        }
+    }
+
+    fn empty_progress() -> ProgressStore {
+        let dir = tempfile::tempdir().unwrap();
+        ProgressStore::load(&dir.path().join("progress.json")).unwrap()
+    }
 
     fn parse(args: &[&str]) -> Result<Cli, clap::Error> {
         Cli::try_parse_from(std::iter::once("lualings").chain(args.iter().copied()))
@@ -95,5 +142,63 @@ mod tests {
             }
             other => panic!("expected Commands::Hint, got {other:?}"),
         }
+    }
+
+    #[test]
+    fn render_groups_by_level_and_module_without_repeating_headers() {
+        let exercises = vec![
+            exercise("01_junior", "01_variables", "variables1", "p1"),
+            exercise("01_junior", "01_variables", "variables2", "p2"),
+            exercise("01_junior", "02_types", "types1", "p3"),
+            exercise("02_mid", "01_closures", "closures1", "p4"),
+        ];
+
+        let rendered = render_exercise_list(&exercises, &empty_progress());
+
+        assert_eq!(
+            rendered,
+            "01_junior\n  01_variables\n    [ ] variables1\n    [ ] variables2\n  \
+             02_types\n    [ ] types1\n02_mid\n  01_closures\n    [ ] closures1\n"
+        );
+    }
+
+    #[test]
+    fn render_preserves_input_order_even_if_not_alphabetical() {
+        let exercises = vec![
+            exercise("01_junior", "zeta_module", "z1", "p1"),
+            exercise("01_junior", "alpha_module", "a1", "p2"),
+        ];
+
+        let rendered = render_exercise_list(&exercises, &empty_progress());
+        let zeta_pos = rendered.find("zeta_module").unwrap();
+        let alpha_pos = rendered.find("alpha_module").unwrap();
+        assert!(zeta_pos < alpha_pos);
+    }
+
+    #[test]
+    fn render_reflects_progress_per_exercise() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut store = ProgressStore::load(&dir.path().join("progress.json")).unwrap();
+        store.mark_done("p1").unwrap();
+
+        let exercises = vec![
+            exercise("01_junior", "01_variables", "variables1", "p1"),
+            exercise("01_junior", "01_variables", "variables2", "p2"),
+        ];
+
+        let rendered = render_exercise_list(&exercises, &store);
+
+        assert!(rendered.contains("[x] variables1"));
+        assert!(rendered.contains("[ ] variables2"));
+    }
+
+    #[test]
+    fn render_marks_everything_pending_when_progress_is_empty() {
+        let exercises = vec![exercise("01_junior", "01_variables", "variables1", "p1")];
+
+        let rendered = render_exercise_list(&exercises, &empty_progress());
+
+        assert!(rendered.contains("[ ] variables1"));
+        assert!(!rendered.contains("[x]"));
     }
 }

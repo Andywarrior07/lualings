@@ -79,9 +79,40 @@ pub fn validate_paths(exercises: &[Exercise]) -> Result<(), MissingPaths> {
     }
 }
 
+pub const DEFAULT_INFO_PATH: &str = "info.json";
+
+#[derive(Debug)]
+pub enum LoadError {
+    Io(std::io::Error),
+    Corrupt(serde_json::Error),
+}
+
+impl std::fmt::Display for LoadError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LoadError::Io(err) => write!(f, "{err}"),
+            LoadError::Corrupt(err) => write!(f, "info.json is corrupt: {err}"),
+        }
+    }
+}
+
+impl std::error::Error for LoadError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            LoadError::Io(err) => Some(err),
+            LoadError::Corrupt(err) => Some(err),
+        }
+    }
+}
+
+pub fn load(path: &std::path::Path) -> Result<Vec<Exercise>, LoadError> {
+    let contents = std::fs::read_to_string(path).map_err(LoadError::Io)?;
+    parse_exercises(&contents).map_err(LoadError::Corrupt)
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{Exercise, Mode, parse_exercises, validate_paths};
+    use super::{Exercise, LoadError, Mode, load, parse_exercises, validate_paths};
 
     #[test]
     fn parse_exercises_preserves_file_order() {
@@ -358,5 +389,64 @@ mod tests {
         assert!(message.contains("invalid type"));
         assert!(message.contains("line"));
         assert!(message.contains("column"));
+    }
+
+    #[test]
+    fn load_reads_valid_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("info.json");
+        std::fs::write(
+            &path,
+            r#"
+            {
+                "levels": [
+                    {
+                        "name": "01_junior",
+                        "modules": [
+                            {
+                                "name": "01_variables",
+                                "exercises": [
+                                    {
+                                        "name": "variables1",
+                                        "path": "exercises/01_junior/01_variables/variables1.lua",
+                                        "mode": "compile",
+                                        "hint": "usa local"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+            "#,
+        )
+        .unwrap();
+
+        let exercises = load(&path).unwrap();
+        assert_eq!(exercises.len(), 1);
+        assert_eq!(exercises[0].name, "variables1");
+    }
+
+    #[test]
+    fn load_reports_missing_file_as_error_not_empty() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("no_exist.json");
+
+        match load(&path) {
+            Err(LoadError::Io(_)) => {}
+            other => panic!("expected LoadError::Io, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn load_reports_corrupt_json_as_error_not_panic() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("info.json");
+        std::fs::write(&path, "not json").unwrap();
+
+        match load(&path) {
+            Err(LoadError::Corrupt(_)) => {}
+            other => panic!("expected LoadError::Corrupt, got {other:?}"),
+        }
     }
 }

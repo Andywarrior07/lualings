@@ -25,3 +25,11 @@ never call `set_active` keep seeing every `.lua` change, unchanged from before t
 `init`, `hint <name>`, `hint --solution <name>` all parse correctly and reject a missing `<name>` with
 a clear error; running with no subcommand shows `--help`. Parsing only - `main.rs` still `todo!()`s
 every subcommand, since implementing their actual behavior is separate, not-yet-scheduled tasks.
+- `list` subcommand implemented: loads exercises from `info.json` (new `exercise::load`m since no
+`info.json` exists in the repo yet - that's real curriculum content, scheduled for Epics 10-22) and
+progress from `progress.json` via `ProgressStore` (already tolerant of a missing file), then prints
+them grouped by level/module in `info.json`'s original order (never reordered) with a `[x]`/`[ ]`
+checkbox per exercise (`cli::render_exercise_list`). A missing or corrupt `info.json` is a clear error
+expected first-run state. A small fixture at `test/fixtures/info.json` (separate from real curriculum
+content, same principle planned for epic 9's integration tests) exists for manual end-to-end checks
+until real content lands. `run`/`watch`/`init`/`hint` remain `todo!()`.

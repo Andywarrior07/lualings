@@ -1,0 +1,37 @@
+{
+  "levels": [
+    {
+      "name": "00_fixture",
+      "modules": [
+        {
+          "name": "basics",
+          "exercises": [
+            {
+              "name": "hello",
+              "path": "tests/fixtures/hello.lua",
+              "mode": "compile",
+              "hint": "this is a fixture exercise, not real curriculum content"
+            },
+            {
+              "name": "goodbye",
+              "path": "tests/fixtures/goodbye.lua",
+              "mode": "compile",
+              "hint": "this is a fixture exercise, not real curriculum content"
+            }
+          ]
+        },
+        {
+          "name": "more",
+          "exercises": [
+            {
+              "name": "extra",
+              "path": "tests/fixtures/extra.lua",
+              "mode": "test",
+              "hint": "this is a fixture exercise, not real curriculum content"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
