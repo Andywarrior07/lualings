@@ -28,6 +28,12 @@
               "path": "tests/fixtures/extra.lua",
               "mode": "test",
               "hint": "this is a fixture exercise, not real curriculum content"
+            },
+            {
+              "name": "loop_infinity",
+              "path": "tests/fixtures/extra.lua",
+              "mode": "compile",
+              "hint": "this is a fixture exercise, not real curriculum content"
             }
           ]
         }

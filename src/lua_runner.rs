@@ -2,7 +2,7 @@ use mlua::{HookTriggers, Lua, Result as LuaResult, Value, Variadic, VmState};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-const DEFAULT_TIMEOUT_BUDGET: Duration = Duration::from_secs(2);
+pub const DEFAULT_TIMEOUT_BUDGET: Duration = Duration::from_secs(2);
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Outcome {

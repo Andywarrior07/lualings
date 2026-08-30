@@ -19,6 +19,16 @@ pub struct Exercise {
     pub module: String,
 }
 
+impl Exercise {
+    pub fn find_by_name<'a>(exercises: &'a [Exercise], name: &str) -> Option<&'a Exercise> {
+        exercises.iter().find(|exercise| exercise.name == name)
+    }
+
+    pub fn read_source(&self) -> std::io::Result<String> {
+        std::fs::read_to_string(&self.path)
+    }
+}
+
 #[derive(Deserialize)]
 struct Info {
     levels: Vec<Level>,
@@ -448,5 +458,51 @@ mod tests {
             Err(LoadError::Corrupt(_)) => {}
             other => panic!("expected LoadError::Corrupt, got {other:?}"),
         }
+    }
+
+    #[test]
+    fn find_by_name_returns_the_matching_exercise() {
+        let mut a = exercise_with_path("a.lua");
+        a.name = "variables1".to_string();
+        let mut b = exercise_with_path("b.lua");
+        b.name = "variables2".to_string();
+        let exercises = vec![a, b];
+
+        let found = Exercise::find_by_name(&exercises, "variables2").unwrap();
+        assert_eq!(found.path, "b.lua");
+    }
+
+    #[test]
+    fn find_by_name_returns_none_when_absent() {
+        let mut a = exercise_with_path("a.lua");
+        a.name = "variables1".to_string();
+        let exercises = vec![a];
+
+        assert!(Exercise::find_by_name(&exercises, "no_existe").is_none());
+    }
+
+    #[test]
+    fn find_by_name_does_not_partial_match() {
+        let mut a = exercise_with_path("a.lua");
+        a.name = "variables1".to_string();
+        let exercises = vec![a];
+
+        assert!(Exercise::find_by_name(&exercises, "variables").is_none());
+    }
+
+    #[test]
+    fn read_source_reads_the_exercises_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("exercise.lua");
+        std::fs::write(&path, "local x = 1").unwrap();
+
+        let exercise = exercise_with_path(path.to_str().unwrap());
+        assert_eq!(exercise.read_source().unwrap(), "local x = 1");
+    }
+
+    #[test]
+    fn read_source_fails_when_file_is_missing() {
+        let exercise = exercise_with_path("no_exist.lua");
+        assert!(exercise.read_source().is_err());
     }
 }

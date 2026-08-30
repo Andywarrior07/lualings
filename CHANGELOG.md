@@ -33,3 +33,17 @@ checkbox per exercise (`cli::render_exercise_list`). A missing or corrupt `info.
 expected first-run state. A small fixture at `test/fixtures/info.json` (separate from real curriculum
 content, same principle planned for epic 9's integration tests) exists for manual end-to-end checks
 until real content lands. `run`/`watch`/`init`/`hint` remain `todo!()`.
+- `run <name>` subcommand implemented: finds the exercise by name (`Exercise::find_by_name`),
+reads itts `.lua` from disk (`Exercise::read_source`), dispatches to `lua_runner::run_compile`/`run_test`
+based on `Exercise.mode`, and prints the result (`cli::render_run_result`) mapping `Outcome`'s three
+variants directly - `[PASS]`, `[FAIL]` with the failure message, `[TIMEOUT]` mentioning the real
+budget (`lua_runner::DEFAULT_TIMEOUT_BUDGET`, now public). A pass marks the exercise done via
+`ProgressStore::mark_done`; fail/timeout never do. Exit codes are now a fixed 3-level contract,
+decided now instead of deferred to Epic 9's integration test: `0` pass, `1` (`cli::EXIT_CONTENT_FAILURE`)
+fail/timeout, `2` (`cli::EXIT_OPERATIONAL_ERROR`) for operational in `info.json` (distinct message
+from "unknown name" - one is user input, the other is a data/filesystem inconsistency) opr a failure
+loading `info.json`/`progress.json`. `list`'s existing exit code for the latter was retroactively
+bumped from `1` to `2` to fit this same contract, since it now collides with the new meaning of `1`.
+The fixture at `tests/fixtures/` gained real `.lua` files backing its declared exercises (`hello.lua`
+pass, `goodby.lua` fail, `extra.lua` pass via `Mode::Test`) plus a `loop_infinity` entry, so `run`'s
+three outcomes are exercisable end-to-end. `watch`/`init`/`hint` remain `todo!()`.

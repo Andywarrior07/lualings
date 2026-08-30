@@ -1,7 +1,11 @@
 use crate::exercise::Exercise;
+use crate::lua_runner::{self, Outcome};
 use crate::progress::ProgressStore;
 use clap::{Parser, Subcommand};
 use std::fmt::Write as _;
+
+pub const EXIT_CONTENT_FAILURE: i32 = 1;
+pub const EXIT_OPERATIONAL_ERROR: i32 = 2;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None, arg_required_else_help = true)]
@@ -51,10 +55,22 @@ pub fn render_exercise_list(exercises: &[Exercise], progress: &ProgressStore) ->
     out
 }
 
+pub fn render_run_result(name: &str, outcome: &Outcome) -> String {
+    match outcome {
+        Outcome::Pass => format!("[PASS] {name}\n"),
+        Outcome::Fail(message) => format!("[FAIL] {name}\n  {message}\n"),
+        Outcome::Timeout => format!(
+            "[TIMEOUT] {name}\n  exceeded the {:?} execution time limit\n",
+            lua_runner::DEFAULT_TIMEOUT_BUDGET
+        ),
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{Cli, Commands, render_exercise_list};
+    use super::{Cli, Commands, render_exercise_list, render_run_result};
     use crate::exercise::{Exercise, Mode};
+    use crate::lua_runner::Outcome;
     use crate::progress::ProgressStore;
     use clap::Parser;
 
@@ -200,5 +216,24 @@ mod tests {
 
         assert!(rendered.contains("[ ] variables1"));
         assert!(!rendered.contains("[x]"));
+    }
+
+    #[test]
+    fn render_run_result_pass() {
+        let rendered = render_run_result("variables1", &Outcome::Pass);
+        assert_eq!(rendered, "[PASS] variables1\n");
+    }
+
+    #[test]
+    fn render_run_result_fail_includes_the_full_message() {
+        let rendered = render_run_result("variables3", &Outcome::Fail("boom".to_string()));
+        assert_eq!(rendered, "[FAIL] variables3\n  boom\n");
+    }
+
+    #[test]
+    fn render_run_result_timeout_mentions_the_real_budget() {
+        let rendered = render_run_result("loop_infinity", &Outcome::Timeout);
+        assert!(rendered.starts_with("[TIMEOUT] loop_infinity\n"));
+        assert!(rendered.contains("2s"));
     }
 }
