@@ -66,9 +66,18 @@ pub fn render_run_result(name: &str, outcome: &Outcome) -> String {
     }
 }
 
+pub fn first_pending<'a>(
+    exercises: &'a [Exercise],
+    progress: &ProgressStore,
+) -> Option<&'a Exercise> {
+    exercises
+        .iter()
+        .find(|exercise| !progress.is_done(&exercise.path))
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{Cli, Commands, render_exercise_list, render_run_result};
+    use super::{Cli, Commands, first_pending, render_exercise_list, render_run_result};
     use crate::exercise::{Exercise, Mode};
     use crate::lua_runner::Outcome;
     use crate::progress::ProgressStore;
@@ -235,5 +244,53 @@ mod tests {
         let rendered = render_run_result("loop_infinity", &Outcome::Timeout);
         assert!(rendered.starts_with("[TIMEOUT] loop_infinity\n"));
         assert!(rendered.contains("2s"));
+    }
+
+    #[test]
+    fn first_pending_returns_the_first_exercise_when_progress_is_empty() {
+        let exercises = vec![
+            exercise("01_junior", "01_variables", "variables1", "p1"),
+            exercise("01_junior", "01_variables", "variables2", "p2"),
+        ];
+
+        let found = first_pending(&exercises, &empty_progress()).unwrap();
+        assert_eq!(found.name, "variables1");
+    }
+
+    #[test]
+    fn first_pending_skips_already_completed_exercises() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut store = ProgressStore::load(&dir.path().join("progress.json")).unwrap();
+        store.mark_done("p1").unwrap();
+
+        let exercises = vec![
+            exercise("01_junior", "01_variables", "variables1", "p1"),
+            exercise("01_junior", "01_variables", "variables2", "p2"),
+        ];
+
+        let found = first_pending(&exercises, &store).unwrap();
+        assert_eq!(found.name, "variables2");
+    }
+
+    #[test]
+    fn first_pending_respects_input_order_not_alphabetical() {
+        let exercises = vec![
+            exercise("01_junior", "zeta_module", "z1", "p1"),
+            exercise("01_junior", "alpha_module", "a1", "p2"),
+        ];
+
+        let found = first_pending(&exercises, &empty_progress()).unwrap();
+        assert_eq!(found.name, "z1");
+    }
+
+    #[test]
+    fn first_pending_returns_none_when_everything_is_done() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut store = ProgressStore::load(&dir.path().join("progress.json")).unwrap();
+        store.mark_done("p1").unwrap();
+
+        let exercises = vec![exercise("01_junior", "01_variables", "variables1", "p1")];
+
+        assert!(first_pending(&exercises, &store).is_none());
     }
 }

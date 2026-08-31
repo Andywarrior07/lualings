@@ -8,13 +8,13 @@
           "exercises": [
             {
               "name": "hello",
-              "path": "tests/fixtures/hello.lua",
+              "path": "exercises/hello.lua",
               "mode": "compile",
               "hint": "this is a fixture exercise, not real curriculum content"
             },
             {
               "name": "goodbye",
-              "path": "tests/fixtures/goodbye.lua",
+              "path": "exercises/goodbye.lua",
               "mode": "compile",
               "hint": "this is a fixture exercise, not real curriculum content"
             }
@@ -25,13 +25,13 @@
           "exercises": [
             {
               "name": "extra",
-              "path": "tests/fixtures/extra.lua",
+              "path": "exercises/extra.lua",
               "mode": "test",
               "hint": "this is a fixture exercise, not real curriculum content"
             },
             {
               "name": "loop_infinity",
-              "path": "tests/fixtures/extra.lua",
+              "path": "exercises/extra.lua",
               "mode": "compile",
               "hint": "this is a fixture exercise, not real curriculum content"
             }

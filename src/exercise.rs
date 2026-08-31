@@ -90,6 +90,7 @@ pub fn validate_paths(exercises: &[Exercise]) -> Result<(), MissingPaths> {
 }
 
 pub const DEFAULT_INFO_PATH: &str = "info.json";
+pub const DEFAULT_EXERCISES_DIR: &str = "exercises";
 
 #[derive(Debug)]
 pub enum LoadError {

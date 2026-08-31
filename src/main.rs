@@ -1,9 +1,10 @@
 use clap::Parser;
-use lualings::cli::{self, Cli, Commands, render_exercise_list, render_run_result};
+use lualings::cli::{self, Cli, Commands, first_pending, render_exercise_list, render_run_result};
 use lualings::exercise::{self, Exercise, Mode};
 use lualings::lua_runner;
 use lualings::progress::{self, ProgressStore};
-use std::path::Path;
+use lualings::watcher;
+use std::path::{Path, PathBuf};
 
 fn load_exercises_or_exit() -> Vec<Exercise> {
     match exercise::load(Path::new(exercise::DEFAULT_INFO_PATH)) {
@@ -23,6 +24,37 @@ fn load_progress_or_exit() -> ProgressStore {
             std::process::exit(cli::EXIT_OPERATIONAL_ERROR);
         }
     }
+}
+
+fn execute_and_report(exercise: &Exercise) -> lua_runner::Outcome {
+    let source = match exercise.read_source() {
+        Ok(source) => source,
+        Err(err) => {
+            eprintln!(
+                "error: the exercise file for '{}' was not found on disk \
+                (expected at:{}): {err}",
+                exercise.name, exercise.path
+            );
+            std::process::exit(cli::EXIT_OPERATIONAL_ERROR);
+        }
+    };
+
+    let outcome = match exercise.mode {
+        Mode::Compile => lua_runner::run_compile(&source),
+        Mode::Test => lua_runner::run_compile(&source),
+    };
+
+    print!("{}", render_run_result(&exercise.name, &outcome));
+
+    if matches!(outcome, lua_runner::Outcome::Pass) {
+        let mut progress = load_progress_or_exit();
+        if let Err(err) = progress.mark_done(&exercise.path) {
+            eprintln!("error: exercise passed but progress could not be save: {err}");
+            std::process::exit(cli::EXIT_OPERATIONAL_ERROR);
+        }
+    }
+
+    outcome
 }
 
 fn main() {
@@ -45,39 +77,49 @@ fn main() {
                 }
             };
 
-            let source = match exercise.read_source() {
-                Ok(source) => source,
+            let outcome = execute_and_report(exercise);
+
+            if matches!(
+                outcome,
+                lua_runner::Outcome::Fail(_) | lua_runner::Outcome::Timeout
+            ) {
+                std::process::exit(cli::EXIT_CONTENT_FAILURE);
+            }
+        }
+        Commands::Watch => {
+            let exercises = load_exercises_or_exit();
+
+            let (handle, rx) = match watcher::watch(Path::new(exercise::DEFAULT_EXERCISES_DIR)) {
+                Ok(watch) => watch,
                 Err(err) => {
-                    eprintln!(
-                        "error: the exercise file for '{name}' was not found on disk \
-                        (expected at: {}): {err}",
-                        exercise.path
-                    );
+                    eprintln!("error: could not start watcher: {err}");
                     std::process::exit(cli::EXIT_OPERATIONAL_ERROR);
                 }
             };
 
-            let outcome = match exercise.mode {
-                Mode::Compile => lua_runner::run_compile(&source),
-                Mode::Test => lua_runner::run_test(&source),
-            };
+            loop {
+                let progress = load_progress_or_exit();
+                let active = match first_pending(&exercises, &progress) {
+                    Some(exercise) => exercise,
+                    None => {
+                        println!("All exercises are complete!");
+                        return;
+                    }
+                };
+                handle.set_active(Some(PathBuf::from(&active.path)));
 
-            print!("{}", render_run_result(&exercise.name, &outcome));
-
-            match outcome {
-                lua_runner::Outcome::Pass => {
-                    let mut progress = load_progress_or_exit();
-                    if let Err(err) = progress.mark_done(&exercise.path) {
-                        eprintln!("error: exercise passed but progress could not be saved: {err}");
+                loop {
+                    let outcome = execute_and_report(active);
+                    if matches!(outcome, lua_runner::Outcome::Pass) {
+                        break;
+                    }
+                    if rx.recv().is_err() {
+                        eprintln!("error: the watcher stopped unexpectedly");
                         std::process::exit(cli::EXIT_OPERATIONAL_ERROR);
                     }
                 }
-                lua_runner::Outcome::Fail(_) | lua_runner::Outcome::Timeout => {
-                    std::process::exit(cli::EXIT_CONTENT_FAILURE);
-                }
             }
         }
-        Commands::Watch => todo!("implement `watch`"),
         Commands::Init => todo!("implement `init`"),
         Commands::Hint {
             name: _,

@@ -47,3 +47,17 @@ bumped from `1` to `2` to fit this same contract, since it now collides with the
 The fixture at `tests/fixtures/` gained real `.lua` files backing its declared exercises (`hello.lua`
 pass, `goodby.lua` fail, `extra.lua` pass via `Mode::Test`) plus a `loop_infinity` entry, so `run`'s
 three outcomes are exercisable end-to-end. `watch`/`init`/`hint` remain `todo!()`.
+- `watch` subcommand implemented: watches `exercises/` (new `exercise::DEFAULT_EXERCISES_DIR`,
+not the cwd - keeps the observed tree scoped to whatś semantically relevant instead of rlying on the
+active-axerci0se filter to compensate for a too-broad scope) via `watcher::watch`, no changes needed
+to `watcher.rs` itself. Determines the active exercise as "the first pending" (`cli::first_pending`,
+skipping already-completed exercises without reordering) rather than accepting a `<name>` - evaluates
+it once immediately on start (so the user isn't starting at a blank terminal wondering if it's stuck),
+then re-evaluates on every filtered save event via `WatchHandle::set_active`. A pass auto-advances to
+the next pendding exercise and re-arms the watcher on it, matching rustlings behavior; once nothing
+is left pending, it prints a completion message and exits `0` instead of idling on a filter that
+could never match anything again. The run/report/mark-done pipeline that used to live inline in `Run`
+is now `execute_and_report`, shared between `run` and `watch` - only the reaction to `Fail`/`Timeout`
+was reorganized so its `.lua` files live under `tests/fixtures/exercises/` and `info.json` declares
+them as `exercises/*.lua`, mirroring a real post-`init` project layout instead of the fixture's own
+tree shape. `init`/`hint` remain `todo!()`.
