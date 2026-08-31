@@ -1,5 +1,8 @@
 use clap::Parser;
-use lualings::cli::{self, Cli, Commands, first_pending, render_exercise_list, render_run_result};
+use lualings::cli::{
+    self, Cli, Commands, first_pending, render_exercise_list, render_hint, render_run_result,
+    render_solution,
+};
 use lualings::exercise::{self, Exercise, Mode};
 use lualings::lua_runner;
 use lualings::progress::{self, ProgressStore};
@@ -121,9 +124,27 @@ fn main() {
             }
         }
         Commands::Init => todo!("implement `init`"),
-        Commands::Hint {
-            name: _,
-            solution: _,
-        } => todo!("implement `hint`"),
+        Commands::Hint { name, solution } => {
+            let exercises = load_exercises_or_exit();
+            let exercise = match Exercise::find_by_name(&exercises, &name) {
+                Some(exercise) => exercise,
+                None => {
+                    eprintln!("error: no exercise named '{name}' was found in info.json");
+                    std::process::exit(cli::EXIT_OPERATIONAL_ERROR);
+                }
+            };
+
+            if solution {
+                match exercise.read_source() {
+                    Ok(content) => print!("{}", render_solution(&exercise.name, &content)),
+                    Err(_) => {
+                        eprintln!("No solution is available yet for '{name}'.");
+                        std::process::exit(cli::EXIT_OPERATIONAL_ERROR);
+                    }
+                }
+            } else {
+                print!("{}", render_hint(&exercise.name, &exercise.hint));
+            }
+        }
     }
 }

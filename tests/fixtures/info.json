@@ -10,13 +10,13 @@
               "name": "hello",
               "path": "exercises/hello.lua",
               "mode": "compile",
-              "hint": "this is a fixture exercise, not real curriculum content"
+              "hint": "Print something with print(\"hello\")."
             },
             {
               "name": "goodbye",
               "path": "exercises/goodbye.lua",
               "mode": "compile",
-              "hint": "this is a fixture exercise, not real curriculum content"
+              "hint": "This one calls error(\"boom\") on propuse - fix it so the script runs cleanly."
             }
           ]
         },
@@ -27,13 +27,13 @@
               "name": "extra",
               "path": "exercises/extra.lua",
               "mode": "test",
-              "hint": "this is a fixture exercise, not real curriculum content"
+              "hint": "Set _G.__lualings_pass to true to make this one pass."
             },
             {
               "name": "loop_infinity",
               "path": "exercises/extra.lua",
               "mode": "compile",
-              "hint": "this is a fixture exercise, not real curriculum content"
+              "hint": "This one loops forever on purpose - replace it with something that terminates."
             }
           ]
         }

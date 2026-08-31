@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -26,6 +27,17 @@ impl Exercise {
 
     pub fn read_source(&self) -> std::io::Result<String> {
         std::fs::read_to_string(&self.path)
+    }
+
+    pub fn solution_path(&self) -> PathBuf {
+        let relative = Path::new(&self.path)
+            .strip_prefix(DEFAULT_EXERCISES_DIR)
+            .unwrap_or_else(|_| Path::new(&self.path));
+        Path::new(DEFAULT_SOLUTIONS_DIR).join(relative)
+    }
+
+    pub fn read_solution(&self) -> std::io::Result<String> {
+        std::fs::read_to_string(self.solution_path())
     }
 }
 
@@ -91,6 +103,7 @@ pub fn validate_paths(exercises: &[Exercise]) -> Result<(), MissingPaths> {
 
 pub const DEFAULT_INFO_PATH: &str = "info.json";
 pub const DEFAULT_EXERCISES_DIR: &str = "exercises";
+pub const DEFAULT_SOLUTIONS_DIR: &str = "solutions";
 
 #[derive(Debug)]
 pub enum LoadError {
@@ -504,6 +517,36 @@ mod tests {
     #[test]
     fn read_source_fails_when_file_is_missing() {
         let exercise = exercise_with_path("no_exist.lua");
+        assert!(exercise.read_source().is_err());
+    }
+
+    #[test]
+    fn solution_path_replaces_exercises_prefix_with_solutions() {
+        let exercise = exercise_with_path("exercises/01_junior/01_variables/variables1.lua");
+        assert_eq!(
+            exercise.solution_path(),
+            std::path::PathBuf::from("solutions/01_junior/01_variables/variables1.lua")
+        )
+    }
+
+    #[test]
+    fn solution_path_falls_back_to_joining_the_full_path_when_prefix_does_not_match() {
+        let exercise = exercise_with_path("weird/path.lua");
+        assert_eq!(
+            exercise.solution_path(),
+            std::path::PathBuf::from("solutions/weird/path.lua")
+        );
+    }
+
+    #[test]
+    fn read_solution_reads_a_real_mirrored_file() {
+        let exercise = exercise_with_path("exercises/01_junior/01_variables/variables1.lua");
+        assert!(exercise.read_solution().is_ok());
+    }
+
+    #[test]
+    fn read_solution_fails_when_no_solution_was_written_yer() {
+        let exercise = exercise_with_path("exercise/no_exist_definitely.lua");
         assert!(exercise.read_source().is_err());
     }
 }

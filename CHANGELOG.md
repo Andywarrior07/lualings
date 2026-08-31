@@ -61,3 +61,12 @@ is now `execute_and_report`, shared between `run` and `watch` - only the reactio
 was reorganized so its `.lua` files live under `tests/fixtures/exercises/` and `info.json` declares
 them as `exercises/*.lua`, mirroring a real post-`init` project layout instead of the fixture's own
 tree shape. `init`/`hint` remain `todo!()`.
+- `hint`/`hint --solution` implemented - the first Epic 6 subcommand needing no changes to `cli.rs`'s
+`Commands` shape at all, since `Command::Hint { name, solution }` already had everything it needed
+since Task 6.1. `hint <name>` prints `Exercise.hint` (already in memory from `info.json`, no new I/O)
+`--solution` reads the mirrored file under `solutions/` via new `Exercise::solution_path`/`read_solution`
+(`DEFAULT_SOLUTIONS_DIR`, replacing the `DEFAULT_EXERCISES_DIR` prefix on `Exercise.path` - verified
+agains the real repo that `exercises/`/`solutions/` are an exact mirror by relative path). An unknown
+name is resolved (and reported) before ever looking at `solutions/`, so `--solution` on a bad name
+gives the same message as without it, not a second one. A solution that hasn't been written yet is *not*
+treated as a system fault.

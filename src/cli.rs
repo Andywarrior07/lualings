@@ -75,9 +75,20 @@ pub fn first_pending<'a>(
         .find(|exercise| !progress.is_done(&exercise.path))
 }
 
+pub fn render_hint(name: &str, hint: &str) -> String {
+    format!("Hint for {name}:\n{hint}\n")
+}
+
+pub fn render_solution(name: &str, solution: &str) -> String {
+    format!("Solution for {name}:\n{solution}")
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{Cli, Commands, first_pending, render_exercise_list, render_run_result};
+    use super::{
+        Cli, Commands, first_pending, render_exercise_list, render_hint, render_run_result,
+        render_solution,
+    };
     use crate::exercise::{Exercise, Mode};
     use crate::lua_runner::Outcome;
     use crate::progress::ProgressStore;
@@ -292,5 +303,23 @@ mod tests {
         let exercises = vec![exercise("01_junior", "01_variables", "variables1", "p1")];
 
         assert!(first_pending(&exercises, &store).is_none());
+    }
+
+    #[test]
+    fn render_hint_shows_name_and_hint_text() {
+        let rendered = render_hint("variables1", "Use `local` to declare a variable.");
+        assert_eq!(
+            rendered,
+            "Hint for variables1:\nUse `local` to declare a variable.\n"
+        );
+    }
+
+    #[test]
+    fn render_solution_shows_name_and_content_without_extra_newline() {
+        let rendered = render_solution("variables1", "local x = 5\nprint(x)\n");
+        assert_eq!(
+            rendered,
+            "Solution for variables1:\nlocal x = 5\nprint(x)\n"
+        );
     }
 }
