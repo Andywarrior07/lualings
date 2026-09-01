@@ -20,6 +20,17 @@ impl std::fmt::Display for EmptyExercises {
 
 impl std::error::Error for EmptyExercises {}
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct ExerciseNotFound(pub String);
+
+impl std::fmt::Display for ExerciseNotFound {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "no exercise named '{}' was found", self.0)
+    }
+}
+
+impl std::error::Error for ExerciseNotFound {}
+
 pub struct App {
     exercises: Vec<Exercise>,
     progress: ProgressStore,
@@ -65,12 +76,46 @@ impl App {
     pub fn last_run(&self) -> Option<&LastRun> {
         self.last_run.as_ref()
     }
+
+    fn set_selected(&mut self, idx: usize) {
+        if idx == self.selected {
+            return;
+        }
+        self.watched = Some(PathBuf::from(self.exercises[idx].path.clone()));
+        self.selected = idx;
+        self.last_run = None;
+    }
+
+    pub fn next(&mut self) {
+        let idx = (self.selected + 1).min(self.exercises.len() - 1);
+        self.set_selected(idx);
+    }
+
+    pub fn previous(&mut self) {
+        let idx = self.selected.saturating_sub(1);
+        self.set_selected(idx);
+    }
+
+    pub fn select(&mut self, idx: usize) {
+        self.set_selected(idx.min(self.exercises.len() - 1));
+    }
+
+    pub fn select_by_name(&mut self, name: &str) -> Result<(), ExerciseNotFound> {
+        let idx = self
+            .exercises
+            .iter()
+            .position(|exercise| exercise.name == name)
+            .ok_or_else(|| ExerciseNotFound(name.to_string()))?;
+        self.set_selected(idx);
+        Ok(())
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{App, EmptyExercises};
+    use super::{App, EmptyExercises, ExerciseNotFound, LastRun};
     use crate::exercise::{Exercise, Mode};
+    use crate::lua_runner::Outcome;
     use crate::progress::ProgressStore;
 
     fn exercise(level: &str, module: &str, name: &str, path: &str) -> Exercise {
@@ -167,5 +212,129 @@ mod tests {
         let app = App::new(exercises, empty_progress()).unwrap();
 
         assert!(!app.is_done("p1"));
+    }
+
+    fn three_exercises() -> Vec<Exercise> {
+        vec![
+            exercise("01_junior", "01_variables", "variables1", "p1"),
+            exercise("01_junior", "01_variables", "variables2", "p2"),
+            exercise("01_junior", "01_variables", "variables3", "p3"),
+        ]
+    }
+
+    #[test]
+    fn next_advances_to_the_next_exercise() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        app.next();
+
+        assert_eq!(app.selected_index(), 1);
+        assert_eq!(app.selected_exercise().name, "variables2");
+    }
+
+    #[test]
+    fn next_stops_at_the_last_exercise_without_wrapping() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        app.next();
+        app.next();
+        app.next();
+        app.next();
+
+        assert_eq!(app.selected_index(), 2);
+    }
+
+    #[test]
+    fn previous_moves_to_the_previous_exercise() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+        app.next();
+        app.next();
+
+        app.previous();
+
+        assert_eq!(app.selected_index(), 1);
+    }
+
+    #[test]
+    fn previous_stops_at_the_first_exercise_without_wrapping() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        app.previous();
+        app.previous();
+
+        assert_eq!(app.selected_index(), 0);
+    }
+
+    #[test]
+    fn select_moves_to_the_given_index() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        app.select(2);
+
+        assert_eq!(app.selected_index(), 2);
+        assert_eq!(app.selected_exercise().name, "variables3");
+    }
+
+    #[test]
+    fn select_clamps_an_out_of_range_index_to_the_last_exercise() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        app.select(100);
+
+        assert_eq!(app.selected_index(), 2);
+    }
+
+    #[test]
+    fn select_by_name_moves_to_the_matching_exercise() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        app.select_by_name("variables3").unwrap();
+
+        assert_eq!(app.selected_index(), 2);
+    }
+
+    #[test]
+    fn select_by_name_returns_error_and_leaves_state_unchanged_for_unknown_name() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        let err = app.select_by_name("no_exist").unwrap_err();
+
+        assert_eq!(err, ExerciseNotFound("no_exist".to_string()));
+        assert_eq!(app.selected_index(), 0);
+    }
+
+    #[test]
+    fn navigating_resets_last_run_to_none() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+        app.last_run = Some(LastRun {
+            output: vec!["hola".to_string()],
+            outcome: Outcome::Pass,
+        });
+
+        app.next();
+
+        assert!(app.last_run().is_none());
+    }
+
+    #[test]
+    fn navigating_updates_watched_to_the_new_exercise_path() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        app.next();
+
+        assert_eq!(app.watched(), Some(std::path::Path::new("p2")));
+    }
+
+    #[test]
+    fn moving_to_the_current_index_is_a_noop_and_does_not_reset_last_run() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+        app.last_run = Some(LastRun {
+            output: vec![],
+            outcome: Outcome::Pass,
+        });
+
+        app.select(0);
+
+        assert!(app.last_run().is_some());
     }
 }
