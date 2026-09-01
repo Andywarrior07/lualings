@@ -3,6 +3,7 @@ use lualings::cli::{
     self, Cli, Commands, first_pending, render_exercise_list, render_hint, render_run_result,
     render_solution,
 };
+use lualings::embed;
 use lualings::exercise::{self, Exercise, Mode};
 use lualings::lua_runner;
 use lualings::progress::{self, ProgressStore};
@@ -123,7 +124,15 @@ fn main() {
                 }
             }
         }
-        Commands::Init => todo!("implement `init`"),
+        Commands::Init => {
+            if let Err(err) = embed::extract_to(Path::new(".")) {
+                eprintln!("error: could not extract content: {err}");
+                std::process::exit(cli::EXIT_OPERATIONAL_ERROR);
+            }
+            println!(
+                "Extract exercises, solutions, projects, and info.json into the current directory."
+            );
+        }
         Commands::Hint { name, solution } => {
             let exercises = load_exercises_or_exit();
             let exercise = match Exercise::find_by_name(&exercises, &name) {

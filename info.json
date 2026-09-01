@@ -1,0 +1,442 @@
+{
+  "levels": [
+    {
+      "name": "01_junior",
+      "modules": [
+        {
+          "name": "01_variables",
+          "exercises": [
+            {
+              "name": "variables1",
+              "path": "exercises/01_junior/01_variables/variables1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "variables2",
+              "path": "exercises/01_junior/01_variables/variables2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "variables3",
+              "path": "exercises/01_junior/01_variables/variables3.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "02_types",
+          "exercises": [
+            {
+              "name": "types1",
+              "path": "exercises/01_junior/02_types/types1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "types2",
+              "path": "exercises/01_junior/02_types/types2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "types3",
+              "path": "exercises/01_junior/02_types/types3.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "03_control_flow",
+          "exercises": [
+            {
+              "name": "control_flow1",
+              "path": "exercises/01_junior/03_control_flow/control_flow1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "control_flow2",
+              "path": "exercises/01_junior/03_control_flow/control_flow2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "control_flow3",
+              "path": "exercises/01_junior/03_control_flow/control_flow3.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "control_flow4",
+              "path": "exercises/01_junior/03_control_flow/control_flow4.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "04_functions",
+          "exercises": [
+            {
+              "name": "functions1",
+              "path": "exercises/01_junior/04_functions/functions1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "functions2",
+              "path": "exercises/01_junior/04_functions/functions2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "functions3",
+              "path": "exercises/01_junior/04_functions/functions3.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "functions4",
+              "path": "exercises/01_junior/04_functions/functions4.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "05_tables_basics",
+          "exercises": [
+            {
+              "name": "tables1",
+              "path": "exercises/01_junior/05_tables_basics/tables1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "tables2",
+              "path": "exercises/01_junior/05_tables_basics/tables2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "tables3",
+              "path": "exercises/01_junior/05_tables_basics/tables3.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "06_scope",
+          "exercises": [
+            {
+              "name": "scope1",
+              "path": "exercises/01_junior/06_scope/scope1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "scope2",
+              "path": "exercises/01_junior/06_scope/scope2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "07_strings",
+          "exercises": [
+            {
+              "name": "strings1",
+              "path": "exercises/01_junior/07_strings/strings1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "strings2",
+              "path": "exercises/01_junior/07_strings/strings2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "08_error_handling_basics",
+          "exercises": [
+            {
+              "name": "error1",
+              "path": "exercises/01_junior/08_error_handling_basics/error1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "error2",
+              "path": "exercises/01_junior/08_error_handling_basics/error2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02_mid",
+      "modules": [
+        {
+          "name": "01_closures",
+          "exercises": [
+            {
+              "name": "closures1",
+              "path": "exercises/02_mid/01_closures/closures1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "closures2",
+              "path": "exercises/02_mid/01_closures/closures2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "closures3",
+              "path": "exercises/02_mid/01_closures/closures3.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "02_metatables",
+          "exercises": [
+            {
+              "name": "metatables1",
+              "path": "exercises/02_mid/02_metatables/metatables1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "metatables2",
+              "path": "exercises/02_mid/02_metatables/metatables2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "metatables3",
+              "path": "exercises/02_mid/02_metatables/metatables3.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "metatables4",
+              "path": "exercises/02_mid/02_metatables/metatables4.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "03_oop",
+          "exercises": [
+            {
+              "name": "oop1",
+              "path": "exercises/02_mid/03_oop/oop1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "oop2",
+              "path": "exercises/02_mid/03_oop/oop2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "oop3",
+              "path": "exercises/02_mid/03_oop/oop3.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "04_coroutines",
+          "exercises": [
+            {
+              "name": "coroutines1",
+              "path": "exercises/02_mid/04_coroutines/coroutines1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "coroutines2",
+              "path": "exercises/02_mid/04_coroutines/coroutines2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "coroutines3",
+              "path": "exercises/02_mid/04_coroutines/coroutines3.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "05_string_patterns",
+          "exercises": [
+            {
+              "name": "patterns1",
+              "path": "exercises/02_mid/05_string_patterns/patterns1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "patterns2",
+              "path": "exercises/02_mid/05_string_patterns/patterns2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "patterns3",
+              "path": "exercises/02_mid/05_string_patterns/patterns3.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "06_modules",
+          "exercises": [
+            {
+              "name": "modules1",
+              "path": "exercises/02_mid/06_modules/modules1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "modules2",
+              "path": "exercises/02_mid/06_modules/modules2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "07_error_handling_advanced",
+          "exercises": [
+            {
+              "name": "error_adv1",
+              "path": "exercises/02_mid/07_error_handling_advanced/error_adv1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "error_adv2",
+              "path": "exercises/02_mid/07_error_handling_advanced/error_adv2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "08_performance_basics",
+          "exercises": [
+            {
+              "name": "perf1",
+              "path": "exercises/02_mid/08_performance_basics/perf1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "perf2",
+              "path": "exercises/02_mid/08_performance_basics/perf2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03_senior",
+      "modules": [
+        {
+          "name": "01_gc_and_weak_tables",
+          "exercises": [
+            {
+              "name": "gc1",
+              "path": "exercises/03_senior/01_gc_and_weak_tables/gc1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "gc2",
+              "path": "exercises/03_senior/01_gc_and_weak_tables/gc2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "gc3",
+              "path": "exercises/03_senior/01_gc_and_weak_tables/gc3.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "02_metaprogramming_env",
+          "exercises": [
+            {
+              "name": "env1",
+              "path": "exercises/03_senior/02_metaprogramming_env/env1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            },
+            {
+              "name": "env2",
+              "path": "exercises/03_senior/02_metaprogramming_env/env2.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "03_version_differences",
+          "exercises": [
+            {
+              "name": "versions1",
+              "path": "exercises/03_senior/03_version_differences/versions1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "04_c_api_concepts",
+          "exercises": [
+            {
+              "name": "capi1",
+              "path": "exercises/03_senior/04_c_api_concepts/capi1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        },
+        {
+          "name": "05_luajit_ffi",
+          "exercises": [
+            {
+              "name": "ffi1",
+              "path": "exercises/03_senior/05_luajit_ffi/ffi1.lua",
+              "mode": "compile",
+              "hint": "This exercise doesn't have a hint written yet."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
