@@ -9,17 +9,22 @@ static SOLUTIONS_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/solutions");
 static PROJECTS_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/projects");
 static INFO_JSON: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/info.json"));
 
+fn with_path_context(path: &Path, err: std::io::Error) -> std::io::Error {
+    std::io::Error::new(err.kind(), format!("{}: {err}", path.display()))
+}
+
 fn extract_dir_skip_existing(dir: &Dir<'_>, target: &Path) -> std::io::Result<()> {
     for entry in dir.entries() {
         let path = target.join(entry.path());
         match entry {
             DirEntry::Dir(d) => {
-                std::fs::create_dir_all(&path)?;
+                std::fs::create_dir_all(&path).map_err(|err| with_path_context(&path, err))?;
                 extract_dir_skip_existing(d, target)?;
             }
             DirEntry::File(f) => {
                 if !path.exists() {
-                    std::fs::write(&path, f.contents())?;
+                    std::fs::write(&path, f.contents())
+                        .map_err(|err| with_path_context(&path, err))?;
                 }
             }
         }
@@ -40,7 +45,7 @@ pub fn extract_to(target: &Path) -> std::io::Result<()> {
 
     let info_path = target.join("info.json");
     if !info_path.exists() {
-        std::fs::write(info_path, INFO_JSON)?;
+        std::fs::write(&info_path, INFO_JSON).map_err(|err| with_path_context(&info_path, err))?;
     }
 
     Ok(())
@@ -48,8 +53,12 @@ pub fn extract_to(target: &Path) -> std::io::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::{EXERCISES_DIR, extract_to};
+    use super::{
+        EXERCISES_DIR, INFO_JSON, PROJECTS_DIR, PROJECTS_DIR_NAME, SOLUTIONS_DIR, extract_to,
+    };
+    use crate::exercise;
     use include_dir::{Dir, DirEntry};
+    use std::path::{Path, PathBuf};
 
     fn collect_file_names(dir: &Dir<'_>, names: &mut Vec<String>) {
         for entry in dir.entries() {
@@ -62,6 +71,71 @@ mod tests {
                 }
             }
         }
+    }
+
+    fn collect_relative_paths(dir: &Dir<'_>, out: &mut Vec<PathBuf>) {
+        for entry in dir.entries() {
+            match entry {
+                DirEntry::Dir(d) => collect_relative_paths(d, out),
+                DirEntry::File(f) => out.push(f.path().to_path_buf()),
+            }
+        }
+    }
+
+    fn collect_disk_files(root: &Path, base: &Path, out: &mut Vec<PathBuf>) {
+        for entry in std::fs::read_dir(root).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                collect_disk_files(&path, base, out);
+            } else {
+                out.push(path.strip_prefix(base).unwrap().to_path_buf());
+            }
+        }
+    }
+
+    fn assert_tree_matches_embedded(embedded: &Dir<'_>, extracted_root: &Path) {
+        let mut embedded_paths = Vec::new();
+        collect_relative_paths(embedded, &mut embedded_paths);
+        embedded_paths.sort();
+
+        let mut disk_paths = Vec::new();
+        collect_disk_files(extracted_root, extracted_root, &mut disk_paths);
+        disk_paths.sort();
+
+        assert_eq!(
+            embedded_paths, disk_paths,
+            "extracted files under {extracted_root:?} don't match the embedded tree"
+        );
+
+        for relative_path in &embedded_paths {
+            let embedded_contents = embedded.get_file(relative_path).unwrap().contents();
+            let disk_contents = std::fs::read(extracted_root.join(relative_path)).unwrap();
+            assert_eq!(
+                embedded_contents, disk_contents,
+                "content mismatch for {relative_path:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn extract_to_matches_embedded_structure_exactly() {
+        let dir = tempfile::tempdir().unwrap();
+        extract_to(dir.path()).unwrap();
+
+        assert_tree_matches_embedded(
+            &EXERCISES_DIR,
+            &dir.path().join(exercise::DEFAULT_EXERCISES_DIR),
+        );
+        assert_tree_matches_embedded(
+            &SOLUTIONS_DIR,
+            &dir.path().join(exercise::DEFAULT_SOLUTIONS_DIR),
+        );
+        assert_tree_matches_embedded(&PROJECTS_DIR, &dir.path().join(PROJECTS_DIR_NAME));
+
+        assert_eq!(
+            std::fs::read_to_string(dir.path().join("info.json")).unwrap(),
+            INFO_JSON
+        );
     }
 
     #[test]
@@ -160,5 +234,25 @@ mod tests {
             std::fs::read_to_string(cache_dir.join("progress.json")).unwrap(),
             "{\"completed\":{\"x\":true}}"
         )
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn extract_to_reports_the_failing_path_on_write_error() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o555)).unwrap();
+
+        let err = extract_to(dir.path()).unwrap_err();
+
+        let expected_path = dir.path().join(exercise::DEFAULT_EXERCISES_DIR);
+        assert!(
+            err.to_string()
+                .contains(&expected_path.display().to_string()),
+            "expected the error to mention '{expected_path:?}', got: {err}"
+        );
+
+        std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o755)).unwrap();
     }
 }
