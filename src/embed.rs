@@ -153,6 +153,15 @@ mod tests {
     }
 
     #[test]
+    fn extract_to_does_not_create_the_cache_directory() {
+        let dir = tempfile::tempdir().unwrap();
+
+        extract_to(dir.path()).unwrap();
+
+        assert!(!dir.path().join(".lualings-cache").exists());
+    }
+
+    #[test]
     fn extract_to_populates_an_empty_directory() {
         let dir = tempfile::tempdir().unwrap();
         extract_to(dir.path()).unwrap();
