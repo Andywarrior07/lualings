@@ -48,7 +48,35 @@ pub fn extract_to(target: &Path) -> std::io::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::extract_to;
+    use super::{EXERCISES_DIR, extract_to};
+    use include_dir::{Dir, DirEntry};
+
+    fn collect_file_names(dir: &Dir<'_>, names: &mut Vec<String>) {
+        for entry in dir.entries() {
+            match entry {
+                DirEntry::Dir(d) => collect_file_names(d, names),
+                DirEntry::File(f) => {
+                    if let Some(name) = f.path().file_name() {
+                        names.push(name.to_string_lossy().into_owned());
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn embedded_exercises_excludes_test_fixtures() {
+        let mut names = Vec::new();
+        collect_file_names(&EXERCISES_DIR, &mut names);
+
+        for fixture_only_name in ["goodbye.lua", "extra.lua", "loop_infinity.lua"] {
+            assert!(
+                !names.iter().any(|name| name == fixture_only_name),
+                "'{fixture_only_name}' only exists under test/fixtures/exercises/ and \
+                should never be embedded via EXERCISES_DIR"
+            );
+        }
+    }
 
     #[test]
     fn extract_to_populates_an_empty_directory() {
