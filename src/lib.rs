@@ -4,5 +4,6 @@ pub mod embed;
 pub mod exercise;
 pub mod lua_runner;
 pub mod progress;
+pub mod tui;
 pub mod ui;
 pub mod watcher;

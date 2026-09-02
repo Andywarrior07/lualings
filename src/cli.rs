@@ -21,6 +21,7 @@ pub enum Commands {
         name: String,
     },
     Watch,
+    Tui,
     Init,
     Hint {
         name: String,
@@ -129,6 +130,12 @@ mod tests {
     fn watch_parses_without_arguments() {
         let cli = parse(&["watch"]).unwrap();
         assert!(matches!(cli.command, Commands::Watch));
+    }
+
+    #[test]
+    fn tui_parses_without_arguments() {
+        let cli = parse(&["tui"]).unwrap();
+        assert!(matches!(cli.command, Commands::Tui));
     }
 
     #[test]

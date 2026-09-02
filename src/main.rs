@@ -7,6 +7,7 @@ use lualings::embed;
 use lualings::exercise::{self, Exercise, Mode};
 use lualings::lua_runner;
 use lualings::progress::{self, ProgressStore};
+use lualings::tui;
 use lualings::watcher;
 use std::path::{Path, PathBuf};
 
@@ -122,6 +123,12 @@ fn main() {
                         std::process::exit(cli::EXIT_OPERATIONAL_ERROR);
                     }
                 }
+            }
+        }
+        Commands::Tui => {
+            if let Err(err) = tui::run() {
+                eprintln!("error: {err}");
+                std::process::exit(cli::EXIT_OPERATIONAL_ERROR);
             }
         }
         Commands::Init => {

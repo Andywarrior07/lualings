@@ -77,10 +77,6 @@ pub fn run_compile(source: &str) -> Outcome {
     run_compile_with_budget(source, DEFAULT_TIMEOUT_BUDGET)
 }
 
-// Reemplaza `_G.print` en `lua` para que su salida quede en un buffer
-// en memoria en vez de ir a stdout real, precondición para que un futuro panel
-// TUI (Epic 7) la renderice. Debe llamarse antes de ejecutar cualquier
-// script en la instancia recibida.
 pub fn install_print_capture(lua: &Lua) -> LuaResult<Arc<Mutex<Vec<String>>>> {
     let buffer: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
     let buffer_for_closure = Arc::clone(&buffer);
@@ -106,11 +102,56 @@ pub fn install_print_capture(lua: &Lua) -> LuaResult<Arc<Mutex<Vec<String>>>> {
     Ok(buffer)
 }
 
+fn run_compile_capturing_with_budget(source: &str, budget: Duration) -> (Vec<String>, Outcome) {
+    let lua = Lua::new();
+    let buffer = match install_print_capture(&lua) {
+        Ok(buffer) => buffer,
+        Err(err) => return (Vec::new(), classify_error(err)),
+    };
+    if let Err(err) = install_timeout_hook(&lua, budget) {
+        return (Vec::new(), classify_error(err));
+    }
+    let outcome = match lua.load(source).exec() {
+        Ok(()) => Outcome::Pass,
+        Err(err) => classify_error(err),
+    };
+    (buffer.lock().unwrap().clone(), outcome)
+}
+
+pub fn run_compile_capturing(source: &str) -> (Vec<String>, Outcome) {
+    run_compile_capturing_with_budget(source, DEFAULT_TIMEOUT_BUDGET)
+}
+
+fn run_test_capturing_with_budget(source: &str, budget: Duration) -> (Vec<String>, Outcome) {
+    let lua = Lua::new();
+    let buffer = match install_print_capture(&lua) {
+        Ok(buffer) => buffer,
+        Err(err) => return (Vec::new(), classify_error(err)),
+    };
+    if let Err(err) = install_timeout_hook(&lua, budget) {
+        return (Vec::new(), classify_error(err));
+    }
+    let outcome = match lua.load(source).exec() {
+        Ok(()) => match lua.globals().get::<Value>("__lualings_pass") {
+            Ok(Value::Boolean(true)) => Outcome::Pass,
+            _ => Outcome::Fail("_G.__lualings_pass was not set to true".to_string()),
+        },
+        Err(err) => classify_error(err),
+    };
+    (buffer.lock().unwrap().clone(), outcome)
+}
+
+pub fn run_test_capturing(source: &str) -> (Vec<String>, Outcome) {
+    run_test_capturing_with_budget(source, DEFAULT_TIMEOUT_BUDGET)
+}
+
 #[cfg(test)]
 mod tests {
     use super::{
         Outcome, install_print_capture, install_timeout_hook, is_timeout_error, run_compile,
-        run_compile_with_budget, run_source, run_test, run_test_with_budget,
+        run_compile_capturing, run_compile_capturing_with_budget, run_compile_with_budget,
+        run_source, run_test, run_test_capturing, run_test_capturing_with_budget,
+        run_test_with_budget,
     };
     use mlua::Lua;
     use std::sync::{Arc, Mutex};
@@ -368,5 +409,46 @@ mod tests {
             Err(mlua::Error::RuntimeError(msg)) => assert!(msg.contains("boom")),
             other => panic!("expected RuntimeError, got {other:?}"),
         }
+    }
+
+    #[test]
+    fn run_compile_capturing_returns_pass_and_the_printed_output() {
+        let (output, outcome) = run_compile_capturing("print('a') print('b')");
+        assert_pass(&outcome);
+        assert_eq!(output, vec!["a".to_string(), "b".to_string()]);
+    }
+
+    #[test]
+    fn run_test_capturing_returns_pass_and_the_printed_output() {
+        let (output, outcome) = run_test_capturing("print('checking') _G.__lualings_pass = true");
+        assert_pass(&outcome);
+        assert_eq!(output, vec!["checking".to_string()]);
+    }
+
+    #[test]
+    fn run_compile_capturing_returns_output_printed_before_the_failure() {
+        let (output, outcome) = run_compile_capturing("print('before') error('boom')");
+        assert_fail(&outcome);
+        assert_eq!(output, vec!["before".to_string()]);
+    }
+
+    #[test]
+    fn run_test_capturing_times_out_and_still_returns_partial_output() {
+        let (output, outcome) = run_test_capturing_with_budget(
+            "print('before') while true do end",
+            Duration::from_millis(100),
+        );
+        assert_timeout(&outcome);
+        assert_eq!(output, vec!["before".to_string()]);
+    }
+
+    #[test]
+    fn run_compile_capturing_times_out_and_still_returns_partial_output() {
+        let (output, outcome) = run_compile_capturing_with_budget(
+            "print('before') while true do end",
+            Duration::from_millis(100),
+        );
+        assert_timeout(&outcome);
+        assert_eq!(output, vec!["before".to_string()]);
     }
 }

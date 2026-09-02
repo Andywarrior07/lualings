@@ -1,7 +1,14 @@
 use crate::exercise::Exercise;
 use crate::lua_runner::Outcome;
 use crate::progress::ProgressStore;
+use crossterm::event::KeyCode;
 use std::path::{Path, PathBuf};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Action {
+    Continue,
+    Quit,
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct LastRun {
@@ -109,14 +116,38 @@ impl App {
         self.set_selected(idx);
         Ok(())
     }
+
+    pub fn record_run(&mut self, output: Vec<String>, outcome: Outcome) {
+        if matches!(outcome, Outcome::Pass) {
+            let path = self.exercises[self.selected].path.clone();
+            let _ = self.progress.mark_done(&path);
+        }
+        self.last_run = Some(LastRun { output, outcome });
+    }
+
+    pub fn handle_key(&mut self, key: KeyCode) -> Action {
+        match key {
+            KeyCode::Char('j') | KeyCode::Down => {
+                self.next();
+                Action::Continue
+            }
+            KeyCode::Char('k') | KeyCode::Up => {
+                self.previous();
+                Action::Continue
+            }
+            KeyCode::Char('q') | KeyCode::Esc => Action::Quit,
+            _ => Action::Continue,
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{App, EmptyExercises, ExerciseNotFound, LastRun};
+    use super::{Action, App, EmptyExercises, ExerciseNotFound, LastRun};
     use crate::exercise::{Exercise, Mode};
     use crate::lua_runner::Outcome;
     use crate::progress::ProgressStore;
+    use crossterm::event::KeyCode;
 
     fn exercise(level: &str, module: &str, name: &str, path: &str) -> Exercise {
         Exercise {
@@ -336,5 +367,85 @@ mod tests {
         app.select(0);
 
         assert!(app.last_run().is_some());
+    }
+
+    #[test]
+    fn record_run_on_pass_marks_the_selected_exercise_done() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        app.record_run(vec!["ok".to_string()], Outcome::Pass);
+
+        assert!(app.is_done("p1"));
+        assert_eq!(
+            app.last_run(),
+            Some(&LastRun {
+                output: vec!["ok".to_string()],
+                outcome: Outcome::Pass
+            })
+        );
+    }
+
+    #[test]
+    fn record_run_on_fail_does_not_mark_done() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        app.record_run(vec![], Outcome::Fail("boom".to_string()));
+
+        assert!(!app.is_done("p1"));
+    }
+
+    #[test]
+    fn record_run_always_overwrites_last_run() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+        app.record_run(vec!["first".to_string()], Outcome::Fail("boom".to_string()));
+
+        app.record_run(vec!["second".to_string()], Outcome::Pass);
+
+        assert_eq!(
+            app.last_run(),
+            Some(&LastRun {
+                output: vec!["second".to_string()],
+                outcome: Outcome::Pass
+            })
+        );
+    }
+
+    #[test]
+    fn handle_key_j_and_down_advance_to_the_next_exercise() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        assert_eq!(app.handle_key(KeyCode::Char('j')), Action::Continue);
+        assert_eq!(app.selected_index(), 1);
+
+        assert_eq!(app.handle_key(KeyCode::Down), Action::Continue);
+        assert_eq!(app.selected_index(), 2);
+    }
+
+    #[test]
+    fn handle_key_k_and_up_move_to_the_previous_exercise() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+        app.select(2);
+
+        assert_eq!(app.handle_key(KeyCode::Char('k')), Action::Continue);
+        assert_eq!(app.selected_index(), 1);
+
+        assert_eq!(app.handle_key(KeyCode::Up), Action::Continue);
+        assert_eq!(app.selected_index(), 0);
+    }
+
+    #[test]
+    fn handle_key_q_and_esc_return_quit() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        assert_eq!(app.handle_key(KeyCode::Char('q')), Action::Quit);
+        assert_eq!(app.handle_key(KeyCode::Esc), Action::Quit);
+    }
+
+    #[test]
+    fn handle_key_unknown_key_returns_continue_and_does_not_move() {
+        let mut app = App::new(three_exercises(), empty_progress()).unwrap();
+
+        assert_eq!(app.handle_key(KeyCode::Char('x')), Action::Continue);
+        assert_eq!(app.selected_index(), 0);
     }
 }
