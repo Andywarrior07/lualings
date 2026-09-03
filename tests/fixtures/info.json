@@ -7,31 +7,20 @@
           "name": "basics",
           "exercises": [
             {
-              "name": "hello",
-              "path": "exercises/hello.lua",
+              "name": "passes",
+              "path": "exercises/passes.lua",
               "mode": "compile",
-              "hint": "Print something with print(\"hello\")."
+              "hint": "Print something with print(\"passes\")."
             },
             {
-              "name": "goodbye",
-              "path": "exercises/goodbye.lua",
+              "name": "fails",
+              "path": "exercises/fails.lua",
               "mode": "compile",
               "hint": "This one calls error(\"boom\") on propuse - fix it so the script runs cleanly."
-            }
-          ]
-        },
-        {
-          "name": "more",
-          "exercises": [
-            {
-              "name": "extra",
-              "path": "exercises/extra.lua",
-              "mode": "test",
-              "hint": "Set _G.__lualings_pass to true to make this one pass."
             },
             {
-              "name": "loop_infinity",
-              "path": "exercises/extra.lua",
+              "name": "infinite_loop",
+              "path": "exercises/infinite_loop.lua",
               "mode": "compile",
               "hint": "This one loops forever on purpose - replace it with something that terminates."
             }

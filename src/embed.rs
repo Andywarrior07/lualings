@@ -143,7 +143,7 @@ mod tests {
         let mut names = Vec::new();
         collect_file_names(&EXERCISES_DIR, &mut names);
 
-        for fixture_only_name in ["goodbye.lua", "extra.lua", "loop_infinity.lua"] {
+        for fixture_only_name in ["passes.lua", "fails.lua", "infinite_loop.lua"] {
             assert!(
                 !names.iter().any(|name| name == fixture_only_name),
                 "'{fixture_only_name}' only exists under test/fixtures/exercises/ and \
