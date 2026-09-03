@@ -1,6 +1,8 @@
+use std::collections::BTreeMap;
 use std::process::Output;
 use std::time::Duration;
 
+use lualings::progress::{self, Progress};
 use support::{fixture_workspace, run, run_with_deadline};
 
 mod support {
@@ -219,11 +221,13 @@ fn init_run_init_does_not_clobber_existing_progress() {
         "expected the first `init` to succeed, got: {init_once:?}"
     );
 
-    let run_once = run(workspace.path(), &["run", "variables1"]);
-    assert!(
-        run_once.status.success(),
-        "expected 'variables1' to pass as currently authored, got: {run_once:?}"
+    let mut completed = BTreeMap::new();
+    completed.insert(
+        "exercises/01_junior/01_variables/variables1.lua".to_string(),
+        true,
     );
+    let progress_path = workspace.path().join(progress::DEFAULT_PROGRESS_PATH);
+    progress::save(&progress_path, &Progress { completed }).unwrap();
 
     let init_twice = run(workspace.path(), &["init"]);
     assert!(

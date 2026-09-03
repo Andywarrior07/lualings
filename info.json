@@ -10,19 +10,19 @@
               "name": "variables1",
               "path": "exercises/01_junior/01_variables/variables1.lua",
               "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "hint": "In Lua, local variables are declared with the `local` keyworkd - there's no `var`, `let` or `const` for this. Try declaring `addonZoom` that way."
             },
             {
               "name": "variables2",
               "path": "exercises/01_junior/01_variables/variables2.lua",
               "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "hint": "`table.unpack(timouts)` only returns as many values as `timouts` actually has. Assign it to more local variables than there are elements and the extra become `nil` - and `nil` breaks arithmetic. Check how many values `timeouts` holds."
             },
             {
               "name": "variables3",
               "path": "exercises/01_junior/01_variables/variables3.lua",
               "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "hint": "Lua variables don't have a fixed type, so reassigning `score` doesn't error by itself - but using it afterwards in arithmetic will, unless the new value happnes to look like a number. Look for a reassignment of `score` that doesn't belong there."
             }
           ]
         },
