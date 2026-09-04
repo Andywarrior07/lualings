@@ -33,19 +33,19 @@
               "name": "types1",
               "path": "exercises/01_junior/02_types/types1.lua",
               "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "hint": "`type()` in Lua always returns its type name in lowercase - \"nil\", \"boolean\", \"number\", \"string\", \"function\", \"table\", \"thread\", \"userdata\"."
             },
             {
               "name": "types2",
               "path": "exercises/01_junior/02_types/types2.lua",
               "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "hint": "The `..` operator auto-converts numbers to strings, but it doesn't know wat to do with a boolean. Convert `expired` to a string explicitly before concatenating it."
             },
             {
               "name": "types3",
               "path": "exercises/01_junior/02_types/types3.lua",
               "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "hint": "Only a value of type `function` can be called with `(). Something change `OnClick` type."
             }
           ]
         },

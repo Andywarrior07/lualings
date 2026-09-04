@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* `01_variables` module complete - exercises, mirrored solutions and exercises hints for `variables1`
-/`variables2`/`variables3`, all  on `Mode::Compile`.
+* `02_types` module complete - exercises, mirrored solutions and exercise hints for `type1`/`type2`/`type3`.
+* `01_variables` module complete - exercises, mirrored solutions and exercises hints for `variables1`/`variables2`/`variables3`, all  on `Mode::Compile`.
 * `init` implemented, plus the minimal Epic 8 embedding slice it needed (new `embed` module,
 `include_dir!`/`include_str!`, `extract_to` that never overwrites existing files). All 6 Epic 6
 subcommands are now implemented.
