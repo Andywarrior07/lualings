@@ -55,26 +55,26 @@
             {
               "name": "control_flow1",
               "path": "exercises/01_junior/03_control_flow/control_flow1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "Check the comparison in the first `if`. At exactly 50% health, should that `if` or the `elseif` catch it?"
             },
             {
               "name": "control_flow2",
               "path": "exercises/01_junior/03_control_flow/control_flow2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`repeat ... until condition` keeps looping *while the condition is false*, and stops as soon as it becomes true - unlike `while` loop in other languages"
             },
             {
               "name": "control_flow3",
               "path": "exercises/01_junior/03_control_flow/control_flow3.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "The numeric `for` upper bound is inclusive. Does `for attempt = 1, maxAttempts - 1` really cover every attempt up to `maxAttempts`?"
             },
             {
               "name": "control_flow4",
               "path": "exercises/01_junior/03_control_flow/control_flow4.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`pairs()` walks every key in the table, array part and named keys alike. `ipairs()` only walks the sequential integer-keyed part."
             }
           ]
         },
