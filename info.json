@@ -85,25 +85,25 @@
               "name": "functions1",
               "path": "exercises/01_junior/04_functions/functions1.lua",
               "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "hint": "Lua doesn't complain about a missing function argument - it just becomes `nil`. Check how many arguments `calculateDamage` actually needs, and how many it's getting."
             },
             {
               "name": "functions2",
               "path": "exercises/01_junior/04_functions/functions2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "A function can `return` fewer values than the caller expects - the missing ones just become `nil` on the caller's side. Check what `splitCurrency` actually returns."
             },
             {
               "name": "functions3",
               "path": "exercises/01_junior/04_functions/functions3.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`...` can hold any number of values, and grabbing only the first couple with `local a, b = ...` silenty drops the rest. Try collecting all of them. e.g. with `{...}`, and looping over that."
             },
             {
               "name": "functions4",
               "path": "exercises/01_junior/04_functions/functions4.lua",
               "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "hint": "Every recursive call needs a condition that stops it - without one, each call adds a new stack frame and keeps going until Lua runs out of stack. Check what happens once `rank reaches 1."
             }
           ]
         },

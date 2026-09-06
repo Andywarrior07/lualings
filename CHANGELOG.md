@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* `04_functions` module complete - exercises, mirrored solutions and exercise hints for `function1`-`function4`
 * `03_control_flow` module complete - exercises, mirrored solutions and exercise hints for `control_flow1`-`control-flow4.`
 * `02_types` module complete - exercises, mirrored solutions and exercise hints for `type1`/`type2`/`type3`.
 * `01_variables` module complete - exercises, mirrored solutions and exercises hints for `variables1`/`variables2`/`variables3`, all  on `Mode::Compile`.
