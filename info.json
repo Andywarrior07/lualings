@@ -114,19 +114,19 @@
               "name": "tables1",
               "path": "exercises/01_junior/05_tables_basics/tables1.lua",
               "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "hint": "Named fields in a Lua table constructor use `=`, not `:`. Check how `frameSettings` is written."
             },
             {
               "name": "tables2",
               "path": "exercises/01_junior/05_tables_basics/tables2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`#` doesn't count how many values in the table aren't `nil`, it finds a border, and a hole in the middle doesn't move it. Try counting the equipped slots explicitly instead of trusting `#abilityBar`."
             },
             {
               "name": "tables3",
               "path": "exercises/01_junior/05_tables_basics/tables3.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`table.remove(consumables, 1)` removes the first item. Which index should actually come out, \"Elixir\" or \"Rope\"?"
             }
           ]
         },
