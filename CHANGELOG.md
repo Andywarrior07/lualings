@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* `06_scope` module complete - exercises, mirrored solutions and exercise hints for `scope1`/`scope2`.
 * `05_tables_basics` module complete - exercises, mirrored solutions and exercise hints for `tables1`-`tables3`.
 * `04_functions` module complete - exercises, mirrored solutions and exercise hints for `function1`-`function4`
 * `03_control_flow` module complete - exercises, mirrored solutions and exercise hints for `control_flow1`-`control-flow4.`

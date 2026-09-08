@@ -136,14 +136,14 @@
             {
               "name": "scope1",
               "path": "exercises/01_junior/06_scope/scope1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "Forgetting the `local` keyword doesn't make Lua complain. Check how `killCount` is declared."
             },
             {
               "name": "scope2",
               "path": "exercises/01_junior/06_scope/scope2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "In Lua any assignment without `local` becomes global. Even though `cooldownRemaining` is only ever mentioned inside `initializeCooldownTracker()` that doesn't automatically make it local to that function."
             }
           ]
         },
