@@ -153,14 +153,14 @@
             {
               "name": "strings1",
               "path": "exercises/01_junior/07_strings/strings1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`%d` doesn't pad with zeros. Look for a format specifier that pads a number to a fixed width, like `%03d`"
             },
             {
               "name": "strings2",
               "path": "exercises/01_junior/07_strings/strings2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`#` on a string gives its length in bytes, not how many characters a person would count. Letters like `é` takes 2 bytes in UTF-8. Look for a function in the `utf8` library that counts actual characters instead."
             }
           ]
         },
