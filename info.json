@@ -192,20 +192,20 @@
             {
               "name": "closures1",
               "path": "exercises/02_mid/01_closures/closures1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "A closure keeps a live reference to the variables from its enclosing scope(its upvalues), but only if those variables actually live in that enclosing scope. If `jumps` is declared inside the function that gets called every time, thereś no outer state left to persist between calls. Where should `local jumps` actually live relative to `makeJumpCounter`?"
             },
             {
               "name": "closures2",
               "path": "exercises/02_mid/01_closures/closures2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "Each call to `makeRouteCounter()` should hand back a function with its own private state, but that only happens if the state variable is created fresh inside the factory, as an upvalue of the returned function. Check were `requestCount` is declared relative to `makeRouteCounter`."
             },
             {
               "name": "closures3",
               "path": "exercises/02_mid/01_closures/closures3.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "Memoization only works if the returned function actually consults and updates `cache`, right now `cache` is captured as an upvalue but never read from or written to. Compare `arg` agains what's already stored in `cache` before deciding whether to call `fn` again."
             }
           ]
         },
