@@ -170,14 +170,14 @@
             {
               "name": "error1",
               "path": "exercises/01_junior/08_error_handling_basics/error1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`pcall` only reports `ok == false` if the protected call actually errored. Check wheter `addonSettings` is set up in a way tat makes `addonSettings.profile.zoom` fail."
             },
             {
               "name": "error2",
               "path": "exercises/01_junior/08_error_handling_basics/error2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "Look closely at the boolean operator in the `assert` condition inside `setZoomLevel`. Is there any value of `value` for which `value >= 0 or value <= 2` is actually false?"
             }
           ]
         }
