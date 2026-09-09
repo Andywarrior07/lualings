@@ -244,20 +244,20 @@
             {
               "name": "oop1",
               "path": "exercises/02_mid/03_oop/oop1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "A constructor needs to link each new isntance to the class table via `setmetatable(instance, Class)`, without it the instance doesn't have `Entity.__index` behind it, so its own methods (like `takeDamage`) can't be found. Check what `Entity.new` is missing."
             },
             {
               "name": "oop2",
               "path": "exercises/02_mid/03_oop/oop2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`FireSpell` needs its own metatable chaining to `Spell` (`setmetatable(FireSpell, {__index = Spell})`) for both the inherited `describe()` method and the \"is-a\" check to work. Check whether `FireSpell` ever gets that metatable."
             },
             {
               "name": "oop3",
               "path": "exercises/02_mid/03_oop/oop3.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "A mixin in Lua is usually applied by copying its functions directly onto the target table, `applyMixin` loops over `mixin` but its body never actually assigns anything to `class`. What line is missing inside that loop?"
             }
           ]
         },
