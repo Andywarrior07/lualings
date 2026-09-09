@@ -215,26 +215,26 @@
             {
               "name": "metatables1",
               "path": "exercises/02_mid/02_metatables/metatables1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`__index` only does something if the table actually has that metatable, `setmetatable(frameSettings, {__index = defaults})` is what wires the fallback up. Without it, a missing key is just `nil`, no matter what `defaults` contains. Check whether `frameSettings` ever gets that metatable."
             },
             {
               "name": "metatables2",
               "path": "exercises/02_mid/02_metatables/metatables2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`__newindex` only fires for keys the table doesn't already have, but the metamethod itself still has to do the storing. Right now the function assigned to `__newindex` doesn't write anywhere. Where should the rebind actually end up?"
             },
             {
               "name": "metatables3",
               "path": "exercises/02_mid/02_metatables/metatables3.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "Calling a table with `()` only works if its metatable defines `__call`, having `__tostring` doesn't make a table callable on its own. Check what `RateLimiter`'s metatable is missing.'"
             },
             {
               "name": "metatables4",
               "path": "exercises/02_mid/02_metatables/metatables4.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "A `__newindex` metamethod that doesn't call `error(...)` (or otherwise refuse the write) doesn't actually protect anything, it just silently does nothing while the assignment appears to succeed. What should happen inside `__newindex` when someone tries to write to `readOnlyConstants`?"
             }
           ]
         },

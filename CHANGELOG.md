@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* `02_metatables` (mid) module complete - exercises, mirrored solutions and exercise hints for `metatables1`/`metatables2`/`metatables3`/`metatables4`.
 * `01_closures` (mid) module complete - exercises, mirrored solutions and exercise hints for `closures1`/`closures2`/`closures3`.
 * `08_error_handling_basics` module complete - exercises, mirrored solutions and exercise hints for `error1`/`error2`
 * `07_strings` module complete - exercises, mirrored solutions and exercise hints for `string1`/`string2`.
