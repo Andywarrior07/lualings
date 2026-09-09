@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* `06_modules` (mid) module complete - exercises, mirrored solutions and exercise hints for `modules1`/`modules2`.
 * `05_string_patterns` (mid) module complete -exercises, mirrored solutions and exercise hints for `patterns1`/`patterns2`/`patterns3`
 * `04_coroutines` (mid) module complete - exercises, mirrored solutions and exercise hints for `coroutines1`/`coroutines2`/`coroutines3`
 * `03_loop` (mid) module complete - exercises, mirrored solutions and exercise hints for `oop1`/`oop2`/`oop3`

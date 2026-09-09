@@ -313,14 +313,14 @@
             {
               "name": "modules1",
               "path": "exercises/02_mid/06_modules/modules1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "A module built with the `local M = {}` pattern should expose everythin through `M`, a helper defined as a bare `function name(...)` instead of `function M.name(...)` leaks into `_G` instead of staying scoped to the module. Check how `isBlank` is defined."
             },
             {
               "name": "modules2",
               "path": "exercises/02_mid/06_modules/modules2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`require` only returns the exact same table twice if `package.loaded[name]` still holds what it held the first time, reassigning `package.loaded[name]` again before the second `require` call defeats the whole point of caching. Check whether the config really needs to be rebuilt before the second `require`."
             }
           ]
         },
