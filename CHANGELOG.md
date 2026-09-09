@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
+* `04_coroutines` module complete - exercises, mirrored solutions and exercise hints for `coroutines1`/`coroutines2`/`coroutines3`
 * `03_loop` (mid) module complete - exercises, mirrored solutions and exercise hints for `oop1`/`oop2`/`oop3`
 * `02_metatables` (mid) module complete - exercises, mirrored solutions and exercise hints for `metatables1`/`metatables2`/`metatables3`/`metatables4`.
 * `01_closures` (mid) module complete - exercises, mirrored solutions and exercise hints for `closures1`/`closures2`/`closures3`.

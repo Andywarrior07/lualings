@@ -267,20 +267,20 @@
             {
               "name": "coroutines1",
               "path": "exercises/02_mid/04_coroutines/coroutines1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "Each `coroutine.resume` continues the coroutine from right after its laast `yield`, in the order the `yield` calls appear in the body, not in whatever order feels natural to write them. Check the order of the three `coroutine.yield` calls inside `dialogueScript`."
             },
             {
               "name": "coroutines2",
               "path": "exercises/02_mid/04_coroutines/coroutines2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "The values `coroutine.wrap` produces are exactly whatever `coroutine.yield` passes, in the order the loop reaches them. Check the bounds of the `for offset = ...` loop agains the quest IDs you'd expect starting from `startId`."
             },
             {
               "name": "coroutines3",
               "path": "exercises/02_mid/04_coroutines/coroutines3.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "A coroutine only becomes `\"dead\"` once it actually finishes running past its last `yield`, resuming it just enough times to reach every `yield` still leaves it `\"suspended\"`. With two `yield` calls inside `applyBuffSteps`, how many `coroutine.resume` calls does it take to fully drain it?"
             }
           ]
         },
