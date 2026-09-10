@@ -330,14 +330,14 @@
             {
               "name": "error_adv1",
               "path": "exercises/02_mid/07_error_handling_advanced/error_adv1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "xpcall's handler receives the raw error, and whatever it returns becomes xpcall's second return value, so if you want every error message to carry a consistente prefix before it reaches the caller, the handler itself has to build that string. Check what errorHandler actually does with err."
             },
             {
               "name": "error_adv2",
               "path": "exercises/02_mid/07_error_handling_advanced/error_adv2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "An error can be any value, not just a string, error(table) lets whoever catches it inspect fields like code without parsing a message, and it also skips the position prefix Lua adds to string errors. Check what value equipItem actually passes to error(...)."
             }
           ]
         },
