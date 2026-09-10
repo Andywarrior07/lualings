@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* `08_performance_basics` (mid) module compelte - exercises, mirrored solutions and exercise hints for `perf1`/`perf2`
 * `07_error_handling_advanced` (mid) module complete - exercises, mirrored solutions and exercise hints for `error_adv1`/`error_adv2`
 * `06_modules` (mid) module complete - exercises, mirrored solutions and exercise hints for `modules1`/`modules2`.
 * `05_string_patterns` (mid) module complete -exercises, mirrored solutions and exercise hints for `patterns1`/`patterns2`/`patterns3`

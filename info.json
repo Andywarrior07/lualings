@@ -347,14 +347,14 @@
             {
               "name": "perf1",
               "path": "exercises/02_mid/08_performance_basics/perf1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "A global lookup goes through the _G/_ENV hash table on every access, while a local variable is a direct VM slot the interpreter reaches immediately, that's why hot code caches frequently used globals like math.floor intoo a local first. But caching only counts if you actually declare it with `local`; without it, you haven't cached anything, you've just created a second global. Check how `floor` is declared."
             },
             {
               "name": "perf2",
               "path": "exercises/02_mid/08_performance_basics/perf2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "Concatenating with `..` inside a loop rebuilds a brand new string every iteration, since Lua strings are immutable, collecting pieces into a table and joining once with table.concat avoids that cost. But the table still has to actually collect every piece. Check what happens to `pieces` on each turn of the loop."
             }
           ]
         }
