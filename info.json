@@ -369,20 +369,20 @@
             {
               "name": "gc1",
               "path": "exercises/03_senior/01_gc_and_weak_tables/gc1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "collectgarbage(\"count\") only tells you what's true right now, it doesn't make anything happen. Dropping the last reference to a table just makes it eligible for collection. the memory doesn't actually get reclaimed until a collection cycle runs and a short script like this one doesn't run one on its own before it exits. Check what happens (or doesn't) between setting debris to nil and measuring memory again."
             },
             {
               "name": "gc2",
               "path": "exercises/03_senior/01_gc_and_weak_tables/gc2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "A plain table holds a strong reference to every key it has, same as it does for values, so as long as an entry sits in the cache, the key it's stored under can never become garbage, no matter how many other references to it disappear. `__mode` on a table's metatable is what tells the collector some of its references don't count as strong. Check how `cache` is created."
             },
             {
               "name": "gc3",
               "path": "exercises/03_senior/01_gc_and_weak_tables/gc3.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "A table only gets marked for finalization at the exact moment setmetatable() runs with a metatable that already has a __gc field in it, adding __gc to the metatable afterward, once it's already attached to the table, is too late, and no amount of collectgarbage(\"collect\") will make that finalizer fire. Check whether __gc is present in the table literal passed to setmetatable or added to the metatable some line after."
             }
           ]
         },
