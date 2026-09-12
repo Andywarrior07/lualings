@@ -10,8 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* `03_version_differences` (advanced) module complete - exercise, mirrored solution and exercise hint for `versions1`
 * `02_metaprogramming_env` (advanced) module complete - exercises, mirrored solutions and exercise hints for `env1`/`env2`
-* `09_gc_and_weak_tables` (advanced) module complete - exercises, mirrored solutions and exercise hints for `gc1`/`gc2`/`gc3`
+* `01_gc_and_weak_tables` (advanced) module complete - exercises, mirrored solutions and exercise hints for `gc1`/`gc2`/`gc3`
 * `08_performance_basics` (mid) module compelte - exercises, mirrored solutions and exercise hints for `perf1`/`perf2`
 * `07_error_handling_advanced` (mid) module complete - exercises, mirrored solutions and exercise hints for `error_adv1`/`error_adv2`
 * `06_modules` (mid) module complete - exercises, mirrored solutions and exercise hints for `modules1`/`modules2`.

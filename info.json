@@ -409,8 +409,8 @@
             {
               "name": "versions1",
               "path": "exercises/03_senior/03_version_differences/versions1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "Reassigning a <const> variable is a compile-time error, not a runtime one, so testing it for real means cheking what load(...) does with a piece of code as a string, not just running the code directly. `load` returns nil plus an error message when compilation fails, instiead of raising. Check whether the stirng being compiled actually declares its variable with the <const> attribute."
             }
           ]
         },
