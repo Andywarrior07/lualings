@@ -392,14 +392,14 @@
             {
               "name": "env1",
               "path": "exercises/03_senior/02_metaprogramming_env/env1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`_ENV` is just an ordinary upvalue, subject to the exact same scoping rules as any local variable, reassigning it bare, without `local`, doesn't create a new one confined to the currnet block, it overwrites the same upvalue everything after that point keeps using. Check whether the block's `_ENV = ...` line has a `local` in front of it."
             },
             {
               "name": "env2",
               "path": "exercises/03_senior/02_metaprogramming_env/env2.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "test",
+              "hint": "`__index` on a table's metatable is a fallback for names that aren't found directly in that table, on an environment table passed to `load`, that means any global the sandboxed code doesn't already have falls through to whatever `__index` points to. Check what the sandbox's metatable falls back to."
             }
           ]
         },
