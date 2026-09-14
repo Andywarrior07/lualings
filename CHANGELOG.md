@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* `04_c_api_concepts` (advanced) module complete - exercise, mirrored solution and exercise hint for `capi1`
+* `05_luajit_ffi` (advanced) module complete - conceptual content `ffi1` ilustrating basic FFI syntax and a `README.md` explaining why it doesn't run here.
+* `04_c_api_concepts` (advanced) module complete - conceptual content `capi1` and a `README.md`covering `lua_State`, the C API's stack-based calling convention and how C functions get registered via `luaL_Reg`/`luaopen_*`
 * `03_version_differences` (advanced) module complete - exercise, mirrored solution and exercise hint for `versions1`
 * `02_metaprogramming_env` (advanced) module complete - exercises, mirrored solutions and exercise hints for `env1`/`env2`
 * `01_gc_and_weak_tables` (advanced) module complete - exercises, mirrored solutions and exercise hints for `gc1`/`gc2`/`gc3`

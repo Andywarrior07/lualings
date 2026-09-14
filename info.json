@@ -431,8 +431,8 @@
             {
               "name": "ffi1",
               "path": "exercises/03_senior/05_luajit_ffi/ffi1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "conceptual",
+              "hint": "This is conceptual content, not a bug to fix. See exercises/03_senior/05_luajit_ffi/README.md for the full explanation of LuaJIT's ffi library and why it can't run on this Lua 5.4 runner."
             }
           ]
         }
