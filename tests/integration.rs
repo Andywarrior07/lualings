@@ -175,6 +175,56 @@ fn run_on_nonexistent_exercise_reports_clean_error() {
 }
 
 #[test]
+fn run_on_conceptual_exercise_reports_a_distinct_notice_without_evaluating() {
+    let workspace = fixture_workspace();
+    let output = run(workspace.path(), &["run", "conceptual_demo"]);
+    let stdout = stderr_of(&output);
+
+    assert_eq!(
+        output.status.code(),
+        Some(lualings::cli::EXIT_CONCEPTUAL_CONTENT),
+        "expected the conceptual-content exit code, got: {output:?}"
+    );
+    assert!(
+        stdout.contains("conceptual"),
+        "expected the notice to say this is conceptual content, got: {stdout}"
+    );
+
+    assert!(
+        !stdout.contains("[PASS]") && !stdout.contains("[FAIL]") && !stdout.contains("[TIMEOUTS]"),
+        "a conceptual exercise must never look like a real evaluation outcome, got: {stdout}"
+    );
+
+    let list_after = run(workspace.path(), &["list"]);
+    let list_stdout = stdout_of(&list_after);
+    assert!(
+        !list_stdout.contains("[x] conceptual_demo"),
+        "running a conceptual exercise must not mark it done, got: {list_stdout}"
+    );
+}
+
+#[test]
+fn hint_solution_on_conceptual_exercise_reports_a_distinct_notice() {
+    let workspace = fixture_workspace();
+    let output = run(workspace.path(), &["hint", "conceptual_demo", "--solution"]);
+    let stdout = stdout_of(&output);
+
+    assert_eq!(
+        output.status.code(),
+        Some(lualings::cli::EXIT_CONCEPTUAL_CONTENT),
+        "expected the conceptual-content exit code, got: {output:?}"
+    );
+    assert!(
+        stdout.contains("solution"),
+        "expected the notice to explain that 'solution' doesn't apply, got: {stdout}"
+    );
+    assert!(
+        !stdout.to_lowercase().contains("not available yet"),
+        "expected a message distinct from the 'not written yet' case, got: {stdout}"
+    );
+}
+
+#[test]
 fn run_on_infinite_lopp_reports_timeout_without_hanging() {
     let workspace = fixture_workspace();
     let deadline = lualings::lua_runner::DEFAULT_TIMEOUT_BUDGET + Duration::from_secs(5);

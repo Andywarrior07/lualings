@@ -23,6 +23,12 @@
               "path": "exercises/infinite_loop.lua",
               "mode": "compile",
               "hint": "This one loops forever on purpose - replace it with something that terminates."
+            },
+            {
+              "name": "conceptual_demo",
+              "path": "exercises/conceptual_demo.lua",
+              "mode": "conceptual",
+              "hint": "This is conceptual content, not a bug to fix. See exercises/README.md."
             }
           ]
         }

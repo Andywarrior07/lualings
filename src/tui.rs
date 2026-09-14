@@ -57,6 +57,11 @@ fn event_loop(
 fn run_and_record(app: &mut App) {
     let exercise = app.selected_exercise();
     let mode = exercise.mode;
+
+    if mode == Mode::Conceptual {
+        return;
+    }
+
     let Ok(source) = exercise.read_source() else {
         return;
     };
@@ -64,6 +69,7 @@ fn run_and_record(app: &mut App) {
     let (output, outcome) = match mode {
         Mode::Compile => lua_runner::run_compile_capturing(&source),
         Mode::Test => lua_runner::run_test_capturing(&source),
+        Mode::Conceptual => unreachable!("gaurded above"),
     };
 
     app.record_run(output, outcome);

@@ -420,8 +420,8 @@
             {
               "name": "capi1",
               "path": "exercises/03_senior/04_c_api_concepts/capi1.lua",
-              "mode": "compile",
-              "hint": "This exercise doesn't have a hint written yet."
+              "mode": "conceptual",
+              "hint": "This is conceptual content, not a bug to fix. See exercises/03_senior/04_c_api_concepts/README.md for full explanation of lua_State, the C API's stack and how C functions get registered."
             }
           ]
         },

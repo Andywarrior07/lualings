@@ -1,4 +1,4 @@
-use crate::exercise::Exercise;
+use crate::exercise::{Exercise, Mode};
 use crate::lua_runner::{self, Outcome};
 use crate::progress::ProgressStore;
 use clap::{Parser, Subcommand};
@@ -6,6 +6,7 @@ use std::fmt::Write as _;
 
 pub const EXIT_CONTENT_FAILURE: i32 = 1;
 pub const EXIT_OPERATIONAL_ERROR: i32 = 2;
+pub const EXIT_CONCEPTUAL_CONTENT: i32 = 3;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None, arg_required_else_help = true)]
@@ -73,7 +74,7 @@ pub fn first_pending<'a>(
 ) -> Option<&'a Exercise> {
     exercises
         .iter()
-        .find(|exercise| !progress.is_done(&exercise.path))
+        .find(|exercise| exercise.mode != Mode::Conceptual && !progress.is_done(&exercise.path))
 }
 
 pub fn render_hint(name: &str, hint: &str) -> String {
@@ -84,10 +85,25 @@ pub fn render_solution(name: &str, solution: &str) -> String {
     format!("Solution for {name}:\n{solution}")
 }
 
+pub fn render_conceptual_run_notice(name: &str, readme_path: &str) -> String {
+    format!(
+        "{name} is conceptual content, it isn automatically evaluated.\n\
+        See {readme_path} for the full explanation.\n"
+    )
+}
+
+pub fn render_conceptual_solution_notice(name: &str, readme_path: &str) -> String {
+    format!(
+        "{name} is conceptual content, the idea of a \"solution\" desn't apply.\n\
+        See {readme_path} for the full explanation. \n"
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::{
-        Cli, Commands, first_pending, render_exercise_list, render_hint, render_run_result,
+        Cli, Commands, first_pending, render_conceptual_run_notice,
+        render_conceptual_solution_notice, render_exercise_list, render_hint, render_run_result,
         render_solution,
     };
     use crate::exercise::{Exercise, Mode};
@@ -310,6 +326,50 @@ mod tests {
         let exercises = vec![exercise("01_junior", "01_variables", "variables1", "p1")];
 
         assert!(first_pending(&exercises, &store).is_none());
+    }
+
+    #[test]
+    fn first_pending_skips_coonceptual_exercises_even_when_not_done() {
+        let mut conceptual = exercise("03_senior", "04_c_api_concepts", "capi1", "p1");
+        conceptual.mode = Mode::Conceptual;
+        let real = exercise("03_senior", "05_luajit_ffi", "ffi1", "p2");
+
+        let exercises = vec![conceptual, real];
+
+        let found = first_pending(&exercises, &empty_progress()).unwrap();
+        assert_eq!(found.name, "ffi1");
+    }
+
+    #[test]
+    fn first_pending_returns_none_when_only_conceptual_exercises_remain() {
+        let mut conceptual = exercise("03_senior", "04_c_api_concepts", "capi1", "p1");
+        conceptual.mode = Mode::Conceptual;
+
+        let exercises = vec![conceptual];
+
+        assert!(first_pending(&exercises, &empty_progress()).is_none());
+    }
+
+    #[test]
+    fn render_conceptual_run_notice_names_the_exercise_and_points_to_the_readme() {
+        let rendered = render_conceptual_run_notice(
+            "capi1",
+            "exercises/03_senior/04_c_api_concepts/README.md",
+        );
+        assert_eq!(
+            rendered,
+            "capi1 is conceptual content, it isn't automatically evaluated.\n\
+            See exercises/03_senior/04_c_api_copncepts/README.md for the full explanation.\n"
+        );
+    }
+
+    #[test]
+    fn render_concepptual_solution_notice_differs_from_the_run_notice() {
+        let run_notice = render_conceptual_run_notice("capi1", "path/README.md");
+        let solution_notice = render_conceptual_solution_notice("capi1", "path/README.md");
+
+        assert_ne!(run_notice, solution_notice);
+        assert!(solution_notice.contains("\"solution\""));
     }
 
     #[test]

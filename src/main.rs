@@ -1,6 +1,7 @@
 use clap::Parser;
 use lualings::cli::{
-    self, Cli, Commands, first_pending, render_exercise_list, render_hint, render_run_result,
+    self, Cli, Commands, first_pending, render_conceptual_run_notice,
+    render_conceptual_solution_notice, render_exercise_list, render_hint, render_run_result,
     render_solution,
 };
 use lualings::embed;
@@ -47,6 +48,10 @@ fn execute_and_report(exercise: &Exercise) -> lua_runner::Outcome {
     let outcome = match exercise.mode {
         Mode::Compile => lua_runner::run_compile(&source),
         Mode::Test => lua_runner::run_compile(&source),
+        Mode::Conceptual => unreachable!(
+            "execute_and_report never receives a conceptual exercise, callers muts intercept \
+            Mode::Conceptual before calling this (see Commands::Run below)"
+        ),
     };
 
     print!("{}", render_run_result(&exercise.name, &outcome));
@@ -81,6 +86,17 @@ fn main() {
                     std::process::exit(cli::EXIT_OPERATIONAL_ERROR);
                 }
             };
+
+            if exercise.mode == Mode::Conceptual {
+                print!(
+                    "{}",
+                    render_conceptual_run_notice(
+                        &exercise.name,
+                        &exercise.readme_path().display().to_string()
+                    )
+                );
+                std::process::exit(cli::EXIT_CONCEPTUAL_CONTENT);
+            }
 
             let outcome = execute_and_report(exercise);
 
@@ -151,6 +167,16 @@ fn main() {
             };
 
             if solution {
+                if exercise.mode == Mode::Conceptual {
+                    print!(
+                        "{}",
+                        render_conceptual_solution_notice(
+                            &exercise.name,
+                            &exercise.readme_path().display().to_string()
+                        )
+                    );
+                    std::process::exit(cli::EXIT_CONCEPTUAL_CONTENT);
+                }
                 match exercise.read_source() {
                     Ok(content) => print!("{}", render_solution(&exercise.name, &content)),
                     Err(_) => {

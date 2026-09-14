@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* `04_c_api_concepts` (advanced) module complete - exercise, mirrored solution and exercise hint for `capi1`
 * `03_version_differences` (advanced) module complete - exercise, mirrored solution and exercise hint for `versions1`
 * `02_metaprogramming_env` (advanced) module complete - exercises, mirrored solutions and exercise hints for `env1`/`env2`
 * `01_gc_and_weak_tables` (advanced) module complete - exercises, mirrored solutions and exercise hints for `gc1`/`gc2`/`gc3`

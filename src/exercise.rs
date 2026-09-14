@@ -6,6 +6,7 @@ use std::path::{Path, PathBuf};
 pub enum Mode {
     Compile,
     Test,
+    Conceptual,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize)]
@@ -38,6 +39,13 @@ impl Exercise {
 
     pub fn read_solution(&self) -> std::io::Result<String> {
         std::fs::read_to_string(self.solution_path())
+    }
+
+    pub fn readme_path(&self) -> PathBuf {
+        Path::new(&self.path)
+            .parent()
+            .map(|dir| dir.join("README.md"))
+            .unwrap_or_else(|| PathBuf::from("README.md"))
     }
 }
 
@@ -536,6 +544,24 @@ mod tests {
             exercise.solution_path(),
             std::path::PathBuf::from("solutions/weird/path.lua")
         );
+    }
+
+    #[test]
+    fn readme_path_is_the_sibling_readme_of_the_exercise_file() {
+        let exercise = exercise_with_path("exercises/03_senior/04_c_api_concepts/capi1.lua");
+        assert_eq!(
+            exercise.readme_path(),
+            std::path::PathBuf::from("exercises/03_senior/04_c_api_concepts/README.md")
+        );
+    }
+
+    #[test]
+    fn readme_path_falls_back_to_a_bare_readme_when_path_has_no_parent() {
+        let exercise = exercise_with_path("capi1.lua");
+        assert_eq!(
+            exercise.readme_path(),
+            std::path::PathBuf::from("README.md")
+        )
     }
 
     #[test]
