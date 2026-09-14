@@ -87,7 +87,7 @@ pub fn render_solution(name: &str, solution: &str) -> String {
 
 pub fn render_conceptual_run_notice(name: &str, readme_path: &str) -> String {
     format!(
-        "{name} is conceptual content, it isn automatically evaluated.\n\
+        "{name} is conceptual content, it isn't automatically evaluated.\n\
         See {readme_path} for the full explanation.\n"
     )
 }
@@ -359,7 +359,7 @@ mod tests {
         assert_eq!(
             rendered,
             "capi1 is conceptual content, it isn't automatically evaluated.\n\
-            See exercises/03_senior/04_c_api_copncepts/README.md for the full explanation.\n"
+            See exercises/03_senior/04_c_api_concepts/README.md for the full explanation.\n"
         );
     }
 

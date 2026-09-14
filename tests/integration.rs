@@ -178,7 +178,7 @@ fn run_on_nonexistent_exercise_reports_clean_error() {
 fn run_on_conceptual_exercise_reports_a_distinct_notice_without_evaluating() {
     let workspace = fixture_workspace();
     let output = run(workspace.path(), &["run", "conceptual_demo"]);
-    let stdout = stderr_of(&output);
+    let stdout = stdout_of(&output);
 
     assert_eq!(
         output.status.code(),
